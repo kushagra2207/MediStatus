@@ -1,0 +1,16 @@
+# Build outputs
+build/
+.dart_tool/
+.packages
+.flutter-plugins
+.flutter-plugins-dependencies
+
+# IDE settings
+.idea/
+.vscode/
+
+# MacOS/Linux system files
+.DS_Store
+
+# Environment variables (if used)
+.env
