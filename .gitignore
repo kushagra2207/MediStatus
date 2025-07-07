@@ -1,0 +1,9 @@
+# System-wide ignores
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# IDE settings
+.idea/
+.vscode/

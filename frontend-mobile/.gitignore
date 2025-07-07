@@ -1,4 +1,4 @@
-# Build outputs
+# Flutter build and tooling
 build/
 .dart_tool/
 .packages
@@ -9,8 +9,20 @@ build/
 .idea/
 .vscode/
 
-# MacOS/Linux system files
+# System files
 .DS_Store
+Thumbs.db
 
 # Environment variables (if used)
 .env
+
+# Symbol files (generated on crash reporting or advanced builds)
+app.*.symbols
+
+# iOS/Android specific files (auto-generated)
+ios/Flutter/Generated.xcconfig
+android/local.properties
+
+# Temporary editor files
+*.swp
+*.swo
