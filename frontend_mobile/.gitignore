@@ -1,0 +1,60 @@
+# Flutter build and tooling
+build/
+.dart_tool/
+.packages
+.flutter-plugins
+.flutter-plugins-dependencies
+.pub-cache/
+.pub/
+
+# IDE settings
+.idea/
+.vscode/
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Environment variables
+.env
+
+# Symbol files (generated on crash reporting or advanced builds)
+app.*.symbols
+
+# Obfuscation related
+app.*.map.json
+
+# iOS/Android specific files (auto-generated)
+ios/Flutter/Generated.xcconfig
+android/local.properties
+**/ios/Flutter/.last_build_id
+/android/app/debug
+/android/app/profile
+/android/app/release
+
+# Temporary editor files
+*.swp
+*.swo
+
+# Miscellaneous
+*.class
+*.log
+*.pyc
+.atom/
+.build/
+.buildlog/
+.history
+.svn/
+.swiftpm/
+migrate_working_dir/
+
+# IntelliJ related
+*.iml
+*.ipr
+*.iws
+
+# Flutter/Dart documentation
+**/doc/api/
+
+# Metadata
+.metadata
