@@ -1,0 +1,22 @@
+const mongoose = require('mongoose')
+
+const hospitalSchema = new mongoose.Schema({
+    name: {
+        type: String,
+        required: true,
+    },
+    address: {
+        type: String,
+        required: true,
+    },
+    contact: {
+        type: String,
+        required: true,
+    },
+    description: {
+        type: String,
+    },
+}, { timestamps: true })
+
+const Hospital = mongoose.model('Hospital', hospitalSchema)
+module.exports = Hospital
