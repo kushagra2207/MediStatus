@@ -29,5 +29,16 @@ const doctorSchema = new mongoose.Schema({
     },
 })
 
+// Hash Password before Save
+doctorSchema.pre("save", async function(next) {
+    if(!this.isModified("password")) return next();
+    this.password = await bcrypt.hash(this.password, 10)
+    next()
+})
+
+doctorSchema.methods.comparePassword = function(candidatePassword) {
+    return bcrypt.compare(candidatePassword, this.password)
+}
+
 const Doctor = mongoose.model('Doctor', doctorSchema)
 module.exports = Doctor
