@@ -1,12 +1,7 @@
-function App() {
+import AppRouterProvider from "./router/AppRouter"
 
-  return (
-    <>
-      <div className="bg-amber-200">
-        Hello
-      </div>
-    </>
-  )
+function App() {
+  return <AppRouterProvider />
 }
 
 export default App
