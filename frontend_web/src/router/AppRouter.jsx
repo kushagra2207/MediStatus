@@ -1,4 +1,5 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+
 import MainLayout from '../layout/MainLayout'
 import ProtectedRoute from '../components/ProtectedRoute'
 
@@ -19,7 +20,13 @@ const router = createBrowserRouter([
             { index: true, element: <Home /> },
             { path: "hospitals", element: <Hospitals /> },
             { path: "doctors", element: <Doctors /> },
+            { path: "login", element: <Login /> },
+            { path: "signup", element: <Signup /> },
         ]
+    },
+    {
+        path: "*",
+        element: <NotFound />
     }
 ])
 

@@ -23,9 +23,11 @@ app.use("/api/auth/admin", adminAuthRoutes)
 const hospitalRoutes = require('./routes/hospitalRoutes')
 const doctorRoutes = require('./routes/doctorRoutes')
 const medicineRoutes = require('./routes/medicineRoutes')
+const adminRoutes = require('./routes/adminRoutes')
 app.use('/api/hospitals', hospitalRoutes)
 app.use('/api/doctors', doctorRoutes)
 app.use('/api/medicines', medicineRoutes)
+app.use('/api/admins', adminRoutes)
 
 const PORT = process.env.PORT || 5000
 app.listen(PORT, () => {

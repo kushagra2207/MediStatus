@@ -6,8 +6,21 @@ const getAllDoctors = async (req, res) => {
         res.json(doctors)
     }
     catch(error) {
-        res.status(500).json({ message: error.message })
+        res.status(500).json({ msg: error.message })
     }
 };
 
-module.exports = { getAllDoctors }
+const getDoctorById = async (req, res) => {
+    try {
+        const doctor = await Doctor.findById(req.params.id).select('-password')
+        if(!doctor) {
+            return res.status(404).json({ msg: 'Doctor not found' })
+        }
+        res.status(200).json(doctor)
+    }
+    catch(error) {
+        res.status(500).json({ msg: error.message })
+    }
+}
+
+module.exports = { getAllDoctors, getDoctorById }

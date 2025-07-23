@@ -1,12 +1,23 @@
-import React from 'react'
+import { useState } from "react"
+import DoctorSignup from "../../components/DoctorSignup"
+import AdminSignup from "../../components/AdminSignup"
 
 const Signup = () => {
+  const [signup, setSignup] = useState("doctor")
+
   return (
-    <div>
-        <input className='outline' type="text" placeholder='Enter Name' />
-        <input className='outline' type="email" placeholder='Enter Email' />
-        <input className='outline' type="password" placeholder='Enter Password' />
-        <input className='outline' type="text" placeholder='Enter Hospital Name' />
+    <div className="p-4 flex flex-col gap-10">
+      <div className='flex justify-center gap-4'>
+        <button className={`p-2 rounded-lg ${signup === "doctor" ? "bg-amber-400": "bg-amber-200"}`} onClick={() => setSignup("doctor")}>
+          Doctor
+        </button>
+        <button className={`p-2 rounded-lg ${signup === "admin" ? "bg-amber-400": "bg-amber-200"}`} onClick={() => setSignup("admin")}>
+          Admin
+        </button>
+      </div>
+      <div>
+        {signup === "doctor" ? <DoctorSignup /> : <AdminSignup />}
+      </div>
     </div>
   )
 }

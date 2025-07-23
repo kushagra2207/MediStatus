@@ -8,7 +8,7 @@ const addMedicine = async (req, res) => {
         res.status(201).json(medicine)
     }
     catch(error) {
-        res.status(400).json({ message: error.message })
+        res.status(400).json({ msg: error.message })
     }
 }
 
@@ -18,14 +18,14 @@ const getAllMedicines = async (req, res) => {
         res.json(medicines)
     }
     catch(error) {
-        res.status(500).json({ message: error.message })
+        res.status(500).json({ msg: error.message })
     }
 }
 
 const updateMedicine = async (req, res) => {
     try {
         const medicine = await Medicine.findById(req.params.id)
-        if (!medicine) return res.status(404).json({ message: 'Medicine not found' })
+        if (!medicine) return res.status(404).json({ msg: 'Medicine not found' })
 
         const { name, quantity } = req.body
         if (name) medicine.name = name
@@ -35,18 +35,18 @@ const updateMedicine = async (req, res) => {
         res.json(medicine)
     }
     catch(error) {
-        res.status(400).json({ message: error.message })
+        res.status(400).json({ msg: error.message })
     }
 }
 
 const deleteMedicine = async (req, res) => {
     try {
         const medicine = await Medicine.findByIdAndDelete(req.params.id)
-        if (!medicine) return res.status(404).json({ message: 'Medicine not found' })
+        if (!medicine) return res.status(404).json({ msg: 'Medicine not found' })
         res.json({ message: 'Medicine deleted successfully' })
     }
     catch(error) {
-        res.status(500).json({ message: error.message })
+        res.status(500).json({ msg: error.message })
     }
 }
 
