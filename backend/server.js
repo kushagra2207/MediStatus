@@ -1,6 +1,19 @@
 const express = require('express')
 const dotenv = require('dotenv')
 const connectDB = require('./config/db')
+const cors = require('cors')
+
+app.use(cors({
+  origin: function (origin, callback) {
+    if(!origin || origin === process.env.FRONTEND_URL) {
+      callback(null, true)
+    }
+    else {
+      callback(new Error("Not allowed by CORS"))
+    }
+  },
+  credentials: true
+}))
 
 dotenv.config()
 connectDB()
