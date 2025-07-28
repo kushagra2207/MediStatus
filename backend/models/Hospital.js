@@ -13,9 +13,6 @@ const hospitalSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    description: {
-        type: String,
-    },
 }, { timestamps: true })
 
 const Hospital = mongoose.model('Hospital', hospitalSchema)

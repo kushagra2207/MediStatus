@@ -5,6 +5,7 @@ import ProtectedRoute from '../components/ProtectedRoute'
 
 import Home from '../pages/public/Home'
 import Hospitals from '../pages/public/Hospitals'
+import HospitalRegister from '../pages/public/HospitalRegister'
 
 import Login from '../pages/auth/Login'
 import Signup from '../pages/auth/Signup'
@@ -20,6 +21,7 @@ const router = createBrowserRouter([
             { path: "hospitals", element: <Hospitals /> },
             { path: "login", element: <Login /> },
             { path: "signup", element: <Signup /> },
+            { path: "hospitalRegister", element: <HospitalRegister /> }
         ]
     },
     {

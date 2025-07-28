@@ -1,30 +1,38 @@
 import { useState, useEffect } from "react";
-import jwtDecode from "jwt-decode"
+import { jwtDecode } from "jwt-decode"
 
 export default function useAuth() {
-    const [user, setUser] = useState(() => {
-        const token = sessionStorage.getItem("token")
+    const isTokenExpired = (decoded) => {
+        if (!decoded?.exp) return true;
+        return decoded.exp * 1000 < Date.now();
+    }
 
-        if(!token) return null
+    const [user, setUser] = useState(() => {
+        const token = localStorage.getItem("token")
+
+        if (!token) return null
 
         try {
             const decoded = jwtDecode(token)
+            if (isTokenExpired(decoded)) return null
             return decoded
         }
-        catch(err) {
+        catch (err) {
             return null
         }
     })
 
     useEffect(() => {
         const handleStorage = () => {
-            const token = sessionStorage.getItem("token")
-            if(!token) {
+            const token = localStorage.getItem("token")
+            if (!token) {
                 setUser(null)
             }
             else {
                 try {
-                    setUser(jwtDecode(token))
+                    const decoded = jwtDecode(token)
+                    if (isTokenExpired(decoded)) setUser(null)
+                    else setUser(decoded)
                 }
                 catch {
                     setUser(null)
@@ -36,5 +44,5 @@ export default function useAuth() {
         return () => window.removeEventListener("storage", handleStorage)
     }, [])
 
-    return { user, setUser }    
+    return { user, setUser }
 }

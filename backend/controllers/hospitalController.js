@@ -2,17 +2,17 @@ const Hospital = require('../models/Hospital')
 
 const addHospital = async (req, res) => {
     try {
-        const { name, address, contact, description } = req.body
-        const hospital = new Hospital({ name, address, contact, description })
+        const { name, address, contact } = req.body
+        const hospital = new Hospital({ name, address, contact })
         await hospital.save()
-        res.status(201).json(hospital)
+        res.status(201).json({ msg: "Hospital Added Successfully" })
     }
     catch(error) {
         if(error.name === "ValidationError") {
             res.status(400).json({ msg: error.message })
         }
         else {
-            res.status(500).json({ msg: "Server Error" })
+            res.status(500).json({ msg: error.message })
         }
     }
 }

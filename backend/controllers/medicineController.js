@@ -5,14 +5,14 @@ const addMedicine = async (req, res) => {
         const { name, quantity, hospital } = req.body
         const medicine = new Medicine({ name, quantity, hospital })
         await medicine.save()
-        res.status(201).json(medicine)
+        res.status(201).json({ msg: "Medicine Added Successfully" })
     }
     catch(error) {
         if(error.name === "ValidationError") {
             res.status(400).json({ msg: error.message })
         }
         else {
-            res.status(500).json({ msg: "Server Error" })
+            res.status(500).json({ msg: error.message })
         }
     }
 }
@@ -37,14 +37,14 @@ const updateMedicine = async (req, res) => {
         if (quantity != null) medicine.quantity = quantity
 
         await medicine.save()
-        res.status(200).json(medicine)
+        res.status(200).json({ msg: "Medicine Updated Successfully" })
     }
     catch(error) {
         if(error.name === "ValidationError") {
             res.status(400).json({ msg: error.message })
         }
         else {
-            res.status(500).json({ msg: "Server Error" })
+            res.status(500).json({ msg: error.message })
         }
     }
 }
