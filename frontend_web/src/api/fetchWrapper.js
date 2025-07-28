@@ -5,17 +5,17 @@ const fetchWrapper = async (endpoint, method = 'GET', body = null, auth = true) 
         'Content-Type': 'application/json',
     }
 
-    if(auth) {
-        const token = localStorage.getItem('token')
-        if(token) headers['Authorization'] = `Bearer ${token}`
+    if (auth) {
+        const token = sessionStorage.getItem('token')
+        if (token) headers['Authorization'] = `Bearer ${token}`
     }
 
     const options = {
-        method, 
+        method,
         headers
     }
 
-    if(body) {
+    if (body) {
         options.body = JSON.stringify(body)
     }
 
@@ -23,13 +23,20 @@ const fetchWrapper = async (endpoint, method = 'GET', body = null, auth = true) 
         const res = await fetch(`${BASE_URL}${endpoint}`, options)
         const data = await res.json()
 
-        if(!res.ok) {
+        if (res.status === 401) {
+            sessionStorage.removeItem("token")
+            window.location.href = "/"
+            throw new Error("Session expired. Please log in again.")
+        }
+
+
+        if (!res.ok) {
             throw new Error(data?.msg || "API Error")
         }
 
         return data
     }
-    catch(error) {
+    catch (error) {
         throw error
     }
 }

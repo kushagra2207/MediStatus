@@ -1,4 +1,4 @@
 import fetchWrapper from "./fetchWrapper";
 
-export const getAllHospitals = () => fetchWrapper('/hospitals', 'GET', null, false)
-export const addHospital = (hospitalData) => fetchWrapper('/hospitals', 'POST', hospitalData, false)
+export const getAllHospitals = () => fetchWrapper('/api/hospitals', 'GET', null, false)
+export const addHospital = (hospitalData) => fetchWrapper('/api/hospitals', 'POST', hospitalData, false)

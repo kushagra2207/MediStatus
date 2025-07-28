@@ -8,14 +8,19 @@ const addMedicine = async (req, res) => {
         res.status(201).json(medicine)
     }
     catch(error) {
-        res.status(400).json({ msg: error.message })
+        if(error.name === "ValidationError") {
+            res.status(400).json({ msg: error.message })
+        }
+        else {
+            res.status(500).json({ msg: "Server Error" })
+        }
     }
 }
 
 const getAllMedicines = async (req, res) => {
     try {
         const medicines = await Medicine.find().populate('hospital', 'name')
-        res.json(medicines)
+        res.status(200).json(medicines)
     }
     catch(error) {
         res.status(500).json({ msg: error.message })
@@ -32,10 +37,15 @@ const updateMedicine = async (req, res) => {
         if (quantity != null) medicine.quantity = quantity
 
         await medicine.save()
-        res.json(medicine)
+        res.status(200).json(medicine)
     }
     catch(error) {
-        res.status(400).json({ msg: error.message })
+        if(error.name === "ValidationError") {
+            res.status(400).json({ msg: error.message })
+        }
+        else {
+            res.status(500).json({ msg: "Server Error" })
+        }
     }
 }
 
@@ -43,7 +53,7 @@ const deleteMedicine = async (req, res) => {
     try {
         const medicine = await Medicine.findByIdAndDelete(req.params.id)
         if (!medicine) return res.status(404).json({ msg: 'Medicine not found' })
-        res.json({ message: 'Medicine deleted successfully' })
+        res.status(200).json({ message: 'Medicine deleted successfully' })
     }
     catch(error) {
         res.status(500).json({ msg: error.message })

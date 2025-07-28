@@ -8,14 +8,19 @@ const addHospital = async (req, res) => {
         res.status(201).json(hospital)
     }
     catch(error) {
-        res.status(400).json({ msg: error.message })
+        if(error.name === "ValidationError") {
+            res.status(400).json({ msg: error.message })
+        }
+        else {
+            res.status(500).json({ msg: "Server Error" })
+        }
     }
 }
 
 const getAllHospitals = async (req, res) => {
     try {
         const hospitals = await Hospital.find()
-        res.json(hospitals)
+        res.status(200).json(hospitals)
     }
     catch (error) {
         res.status(500).json({ msg: error.message })

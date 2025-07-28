@@ -5,7 +5,6 @@ import ProtectedRoute from '../components/ProtectedRoute'
 
 import Home from '../pages/public/Home'
 import Hospitals from '../pages/public/Hospitals'
-import Doctors from '../pages/public/Doctors'
 
 import Login from '../pages/auth/Login'
 import Signup from '../pages/auth/Signup'
@@ -19,7 +18,6 @@ const router = createBrowserRouter([
         children: [
             { index: true, element: <Home /> },
             { path: "hospitals", element: <Hospitals /> },
-            { path: "doctors", element: <Doctors /> },
             { path: "login", element: <Login /> },
             { path: "signup", element: <Signup /> },
         ]

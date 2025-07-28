@@ -36,7 +36,7 @@ exports.adminLogin = async (req, res) => {
         }
 
         const token = createToken({ id: admin._id, role: "admin", hospital: admin.hospital })
-        res.json({ token })
+        res.status(200).json({ token })
     }
     catch(error) {
         res.status(500).json({ msg: error.message })

@@ -1,32 +1,22 @@
 import { useState } from "react"
+import AdminLogin from "../../components/AdminLogin"
+import DoctorLogin from "../../components/DoctorLogin"
 
 const Login = () => {
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
+  const [login, setLogin] = useState("doctor")
 
   return (
-    <div className='p-4'>
-      <div className='text-center'>Login</div>
-      <div className='flex flex-col gap-4'>
-        <input 
-        className='outline' 
-        type="email" 
-        name="email" 
-        value={email} 
-        onChange={(e) => setEmail(e.target.value)} 
-        placeholder='Enter Email' />
-        <input className='outline' 
-        type="password" 
-        name="password" 
-        value={password} 
-        onChange={(e) => setPassword(e.target.value)} 
-        placeholder='Enter Password' />
-      </div>
-      <div className="text-center my-4">
-        <button 
-        className="bg-amber-200">
-          Login
+    <div className="p-4 flex flex-col gap-10">
+      <div className='flex justify-center gap-4'>
+        <button className={`p-2 rounded-lg ${login === "doctor" ? "bg-amber-400": "bg-amber-200"}`} onClick={() => setLogin("doctor")}>
+          Doctor
         </button>
+        <button className={`p-2 rounded-lg ${login === "admin" ? "bg-amber-400": "bg-amber-200"}`} onClick={() => setLogin("admin")}>
+          Admin
+        </button>
+      </div>
+      <div>
+        {login === "doctor" ? <DoctorLogin /> : <AdminLogin />}
       </div>
     </div>
   )

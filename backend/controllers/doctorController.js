@@ -3,7 +3,7 @@ const Doctor = require('../models/Doctor')
 const getAllDoctors = async (req, res) => {
     try {
         const doctors = await Doctor.find().select('-password')
-        res.json(doctors)
+        res.status(200).json(doctors)
     }
     catch(error) {
         res.status(500).json({ msg: error.message })

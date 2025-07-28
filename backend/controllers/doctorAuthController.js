@@ -37,7 +37,7 @@ exports.doctorLogin = async (req, res) => {
     if (!match) return res.status(400).json({ msg: "Invalid credentials" });
 
     const token = createToken({ id: doctor._id, role: "doctor", hospital: doctor.hospital });
-    res.json({ token })
+    res.status(200).json({ token })
   }
   catch(error) {
     res.status(500).json({ msg: error.message });
