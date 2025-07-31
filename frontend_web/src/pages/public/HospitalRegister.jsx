@@ -19,13 +19,18 @@ const HospitalRegister = () => {
     }
 
     const handleRegister = async () => {
-        let data = await addHospital(formData)
+        let res = await addHospital(formData)
+        if(res.status === 201) {
+            toast.success(`${res.data.msg}`)
+        }
+        else {
+            toast.error(`${res.data.msg}`)
+        }
         setFormData({
             name: '',
             address: '',
             contact: ''
         })
-        toast.success(`${data.msg}`)
     }
 
     return (
@@ -56,7 +61,7 @@ const HospitalRegister = () => {
             </div>
             <div>
                 <button
-                    className="bg-blue-200 px-2 py-1 rounded-lg"
+                    className="bg-blue-200 px-2 py-1 rounded-lg cursor-pointer"
                     onClick={handleRegister}
                 >
                     Register

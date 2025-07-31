@@ -1,9 +1,30 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { getAllHospitals } from "../../api/hospital"
 import { IoIosSearch } from "react-icons/io"
 import { Link } from 'react-router-dom'
+import { toast } from "react-toastify"
 
 const Hospitals = () => {
     const [searchTerm, setSearchTerm] = useState("")
+    const [hospitals, setHospitals] = useState([])
+
+    useEffect(() => {
+        const getHospitals = async () => {
+            let res = await getAllHospitals()
+            if (res.status === 200) {
+                setHospitals(res.data)
+                console.log(res.data)
+            }
+            else {
+                toast.error(`${res.data.msg}`)
+            }
+        }
+        getHospitals()
+    }, [])
+
+    const filteredHospitals = hospitals.filter(hospital =>
+        hospital.name.toLowerCase().includes(searchTerm.toLowerCase()) || hospital.address.toLowerCase().includes(searchTerm.toLowerCase())
+    )
 
     return (
         <div className="flex flex-col min-h-screen">
@@ -29,7 +50,20 @@ const Hospitals = () => {
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
                 </div>
-
+                <div className="space-y-4">
+                    {filteredHospitals.length > 0 ? (
+                        filteredHospitals.map(hospital => (
+                            <div key={hospital._id} className="bg-blue-300">
+                                <h3 className="font-bold">{hospital.name}</h3>
+                                <p>{hospital.address}</p>
+                                <p>{hospital.contact}</p>
+                            </div>
+                        ))
+                    ) : (
+                        <p>No Hospitals Found</p>
+                    )
+                    }
+                </div>
             </div>
         </div>
     )

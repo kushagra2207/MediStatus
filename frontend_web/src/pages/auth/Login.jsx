@@ -1,6 +1,6 @@
 import { useState } from "react"
-import AdminLogin from "../../components/AdminLogin"
-import DoctorLogin from "../../components/DoctorLogin"
+import AdminLogin from "./AdminLogin"
+import DoctorLogin from "./DoctorLogin"
 
 const Login = () => {
   const [login, setLogin] = useState("doctor")
