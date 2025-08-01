@@ -2,7 +2,7 @@ import { useState } from "react"
 import { doctorSignup } from "../../api/doctor"
 import { toast } from "react-toastify"
 
-const DoctorSignup = () => {
+const DoctorSignup = ({ hospitals }) => {
   const [formData, setFormData] = useState({
     name: '',
     specialization: '',
@@ -69,17 +69,23 @@ const DoctorSignup = () => {
           value={formData.password}
           onChange={handleChange}
           placeholder='Enter Password' />
-        <input
+        <select
           className='outline'
-          type="text"
           name="hospital"
           value={formData.hospital}
           onChange={handleChange}
-          placeholder='Enter Hospital' />
+        >
+          <option value="" disabled>Select Hospital</option>
+          {hospitals.map(h => (
+            <option key={h._id} value={h._id}>
+              {h.name} ({h.address})
+            </option>
+          ))}
+        </select>
       </div>
       <div className="text-center my-4">
         <button
-          className="bg-amber-200 cursor-pointer" 
+          className="bg-amber-200 cursor-pointer"
           onClick={() => onRegister(formData)}
         >
           Signup
