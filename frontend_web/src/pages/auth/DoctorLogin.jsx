@@ -1,8 +1,23 @@
 import { useState } from "react"
+import { doctorLogin } from "../../api/doctor"
+import { toast } from "react-toastify"
 
 const DoctorLogin = () => {
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
+
+    const onLogin = async (credentials) => {
+        let res = await doctorLogin(credentials)
+        if (res.status === 200) {
+            setEmail("")
+            setPassword("")
+            const { token } = res.data
+            localStorage.setItem("token", token)
+        }
+        else {
+            toast.error(`${res.data.msg}`)
+        }
+    }
 
     return (
         <div>
@@ -24,7 +39,9 @@ const DoctorLogin = () => {
             </div>
             <div className="text-center my-4">
                 <button
-                    className="bg-amber-200">
+                    className="bg-amber-200 cursor-pointer"
+                    onClick={() => onLogin({ email, password })}
+                >
                     Login
                 </button>
             </div>
