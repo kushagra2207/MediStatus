@@ -13,7 +13,6 @@ const Hospitals = () => {
             let res = await getAllHospitals()
             if (res.status === 200) {
                 setHospitals(res.data)
-                console.log(res.data)
             }
             else {
                 toast.error(`${res.data.msg}`)
@@ -23,7 +22,8 @@ const Hospitals = () => {
     }, [])
 
     const filteredHospitals = hospitals.filter(hospital =>
-        hospital.name.toLowerCase().includes(searchTerm.toLowerCase()) || hospital.address.toLowerCase().includes(searchTerm.toLowerCase())
+        hospital.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+        hospital.address.toLowerCase().includes(searchTerm.toLowerCase())
     )
 
     return (

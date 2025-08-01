@@ -1,4 +1,6 @@
 import { useState } from "react"
+import { doctorSignup } from "../../api/doctor"
+import { toast } from "react-toastify"
 
 const DoctorSignup = () => {
   const [formData, setFormData] = useState({
@@ -6,7 +8,7 @@ const DoctorSignup = () => {
     specialization: '',
     email: '',
     password: '',
-    hospitalName: ''
+    hospital: ''
   })
 
   const handleChange = (e) => {
@@ -15,6 +17,24 @@ const DoctorSignup = () => {
       ...prev,
       [name]: value
     }))
+  }
+
+  const onRegister = async (data) => {
+    let res = await doctorSignup(data)
+    setFormData({
+      name: '',
+      specialization: '',
+      email: '',
+      password: '',
+      hospital: ''
+    })
+    if (res.status === 201) {
+      const { token } = res.data
+      localStorage.setItem("token", token)
+    }
+    else {
+      toast.error(`${res.data.msg}`)
+    }
   }
 
   return (
@@ -52,15 +72,16 @@ const DoctorSignup = () => {
         <input
           className='outline'
           type="text"
-          name="hospitalName"
-          value={formData.hospitalName}
+          name="hospital"
+          value={formData.hospital}
           onChange={handleChange}
-          placeholder='Enter Hospital Name' />
-        {console.log(formData)}
+          placeholder='Enter Hospital' />
       </div>
       <div className="text-center my-4">
         <button
-          className="bg-amber-200">
+          className="bg-amber-200 cursor-pointer" 
+          onClick={() => onRegister(formData)}
+        >
           Signup
         </button>
       </div>

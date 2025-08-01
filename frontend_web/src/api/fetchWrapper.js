@@ -35,7 +35,7 @@ const fetchWrapper = async (endpoint, method = 'GET', body = null, auth = true) 
     catch (error) {
         return {
             status: null,
-            data: { msg: "Server down or unreachable. Please try again later" }
+            data: { msg: error.message || "Server down or unreachable. Please try again later" }
         }
     }
 }
