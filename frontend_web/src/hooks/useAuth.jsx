@@ -14,7 +14,10 @@ export default function useAuth() {
 
         try {
             const decoded = jwtDecode(token)
-            if (isTokenExpired(decoded)) return null
+            if (isTokenExpired(decoded)) {
+                localStorage.removeItem("token")
+                return null
+            }
             return decoded
         }
         catch (err) {
@@ -31,7 +34,10 @@ export default function useAuth() {
             else {
                 try {
                     const decoded = jwtDecode(token)
-                    if (isTokenExpired(decoded)) setUser(null)
+                    if (isTokenExpired(decoded)) {
+                        localStorage.removeItem("token")
+                        setUser(null)
+                    }
                     else setUser(decoded)
                 }
                 catch {

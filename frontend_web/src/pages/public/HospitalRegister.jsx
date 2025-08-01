@@ -34,7 +34,7 @@ const HospitalRegister = () => {
     }
 
     return (
-        <div className="bg-blue-100 min-h-screen flex flex-col gap-4 items-center">
+        <div className="flex flex-col gap-4 items-center">
             <div>Hospital Register</div>
             <div className="flex flex-col gap-4">
                 <input

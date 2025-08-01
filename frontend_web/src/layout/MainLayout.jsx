@@ -5,7 +5,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 export default function MainLayout() {
     return (
-        <div className="min-h-screen">
+        <div className="min-h-screen flex flex-col bg-blue-100">
             <Navbar />
             <main>
                 <Outlet />
