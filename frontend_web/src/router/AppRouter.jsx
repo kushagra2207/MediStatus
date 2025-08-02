@@ -1,7 +1,9 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import { Outlet } from 'react-router-dom'
 
 import MainLayout from '../layout/MainLayout'
 import ProtectedRoute from '../components/ProtectedRoute'
+import RedirectIfAuthenticated from '../components/RedirectIfAuthenticated'
 
 import Home from '../pages/public/Home'
 import Hospitals from '../pages/public/Hospitals'
@@ -9,6 +11,12 @@ import HospitalRegister from '../pages/public/HospitalRegister'
 
 import Login from '../pages/auth/Login'
 import Signup from '../pages/auth/Signup'
+
+import AdminDashboard from '../pages/admin/Dashboard'
+import AdminProfile from '../pages/admin/Profile'
+
+import DoctorDashboard from '../pages/doctor/Dashboard'
+import DoctorProfile from '../pages/doctor/Profile'
 
 import NotFound from '../pages/NotFound'
 
@@ -19,9 +27,28 @@ const router = createBrowserRouter([
         children: [
             { index: true, element: <Home /> },
             { path: "hospitals", element: <Hospitals /> },
-            { path: "login", element: <Login /> },
-            { path: "signup", element: <Signup /> },
-            { path: "hospitalRegister", element: <HospitalRegister /> }
+            { path: "hospitalRegister", element: <HospitalRegister /> },
+
+            { path: "login", element: <RedirectIfAuthenticated><Login /></RedirectIfAuthenticated> },
+            { path: "signup", element: <RedirectIfAuthenticated><Signup /></RedirectIfAuthenticated> },
+
+            {
+                path: "admin",
+                element: <ProtectedRoute role="admin"><Outlet /></ProtectedRoute>,
+                children: [
+                    { path: "dashboard", element: <AdminDashboard /> },
+                    { path: "profile", element: <AdminProfile /> }
+                ]
+            },
+
+            {
+                path: "doctor",
+                element: <ProtectedRoute role="doctor"><Outlet /></ProtectedRoute>,
+                children: [
+                    { path: "dashboard", element: <DoctorDashboard /> },
+                    { path: "profile", element: <DoctorProfile /> }
+                ]
+            }
         ]
     },
     {
