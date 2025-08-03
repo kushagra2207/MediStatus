@@ -13,9 +13,11 @@ import Login from '../pages/auth/Login'
 import Signup from '../pages/auth/Signup'
 
 import AdminDashboard from '../pages/admin/Dashboard'
+import AdminMedicines from '../pages/admin/Medicines'
 import AdminProfile from '../pages/admin/Profile'
 
 import DoctorDashboard from '../pages/doctor/Dashboard'
+import DoctorMedicines from '../pages/doctor/Medicines'
 import DoctorProfile from '../pages/doctor/Profile'
 
 import NotFound from '../pages/NotFound'
@@ -37,6 +39,7 @@ const router = createBrowserRouter([
                 element: <ProtectedRoute role="admin"><Outlet /></ProtectedRoute>,
                 children: [
                     { path: "dashboard", element: <AdminDashboard /> },
+                    { path: "medicines", element: <AdminMedicines /> },
                     { path: "profile", element: <AdminProfile /> }
                 ]
             },
@@ -46,6 +49,7 @@ const router = createBrowserRouter([
                 element: <ProtectedRoute role="doctor"><Outlet /></ProtectedRoute>,
                 children: [
                     { path: "dashboard", element: <DoctorDashboard /> },
+                    { path: "medicines", element: <DoctorMedicines /> },
                     { path: "profile", element: <DoctorProfile /> }
                 ]
             }

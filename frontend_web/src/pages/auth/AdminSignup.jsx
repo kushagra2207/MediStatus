@@ -23,7 +23,7 @@ const AdminSignup = ({ hospitals }) => {
   }
 
   const onRegister = async (data) => {
-    let res = await adminSignup(data)
+    const res = await adminSignup(data)
     if (res.status === 201) {
       setFormData({
         name: '',

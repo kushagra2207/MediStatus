@@ -10,7 +10,7 @@ const Hospitals = () => {
 
     useEffect(() => {
         const getHospitals = async () => {
-            let res = await getAllHospitals()
+            const res = await getAllHospitals()
             if (res.status === 200) {
                 setHospitals(res.data)
             }

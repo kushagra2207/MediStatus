@@ -19,7 +19,7 @@ const HospitalRegister = () => {
     }
 
     const handleRegister = async () => {
-        let res = await addHospital(formData)
+        const res = await addHospital(formData)
         if(res.status === 201) {
             toast.success(`${res.data.msg}`)
         }

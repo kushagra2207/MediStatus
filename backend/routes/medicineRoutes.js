@@ -11,7 +11,7 @@ const router = express.Router()
 
 router.post('/', requireAuth, checkRole("admin"), addMedicine)
 router.get('/', requireAuth, getAllMedicines)
-router.put('/:id', requireAuth, checkRole("admin"), updateMedicine)
+router.patch('/:id', requireAuth, checkRole("admin"), updateMedicine)
 router.delete('/:id', requireAuth, checkRole("admin"), deleteMedicine)
 
 module.exports = router

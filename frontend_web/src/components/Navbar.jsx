@@ -19,8 +19,10 @@ const Navbar = () => {
         <>
           <ul className='flex items-center gap-4'>
             {user.role === 'admin' && <li><Link to="/admin/dashboard">DASHBOARD</Link></li>}
+            {user.role === 'admin' && <li><Link to="/admin/medicines">MEDICINES</Link></li>}
             {user.role === 'admin' && <li><Link to="/admin/profile">PROFILE</Link></li>}
             {user.role === 'doctor' && <li><Link to="/doctor/dashboard">DASHBOARD</Link></li>}
+            {user.role === 'doctor' && <li><Link to="/doctor/medicines">MEDICINES</Link></li>}
             {user.role === 'doctor' && <li><Link to="/doctor/profile">PROFILE</Link></li>}
           </ul>
           <div>

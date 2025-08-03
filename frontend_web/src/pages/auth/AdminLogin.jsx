@@ -11,7 +11,7 @@ const AdminLogin = () => {
     const { setUser } = useAuth()
 
     const onLogin = async (credentials) => {
-        let res = await adminLogin(credentials)
+        const res = await adminLogin(credentials)
         if (res.status === 200) {
             setEmail("")
             setPassword("")

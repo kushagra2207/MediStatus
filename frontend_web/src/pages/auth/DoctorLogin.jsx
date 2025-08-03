@@ -11,7 +11,7 @@ const DoctorLogin = () => {
     const { setUser } = useAuth()
 
     const onLogin = async (credentials) => {
-        let res = await doctorLogin(credentials)
+        const res = await doctorLogin(credentials)
         if (res.status === 200) {
             setEmail("")
             setPassword("")

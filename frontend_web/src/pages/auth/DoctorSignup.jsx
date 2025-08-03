@@ -24,7 +24,7 @@ const DoctorSignup = ({ hospitals }) => {
   }
 
   const onRegister = async (data) => {
-    let res = await doctorSignup(data)
+    const res = await doctorSignup(data)
     if (res.status === 201) {
       setFormData({
         name: '',
