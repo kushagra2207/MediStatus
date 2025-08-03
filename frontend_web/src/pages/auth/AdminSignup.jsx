@@ -1,6 +1,8 @@
 import { useState } from "react"
 import { adminSignup } from "../../api/admin"
 import { toast } from "react-toastify"
+import { useAuth } from "../../hooks/useAuth"
+import { jwtDecode } from "jwt-decode"
 
 const AdminSignup = ({ hospitals }) => {
   const [formData, setFormData] = useState({
@@ -9,6 +11,8 @@ const AdminSignup = ({ hospitals }) => {
     password: '',
     hospital: ''
   })
+
+  const { setUser } = useAuth()
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -20,15 +24,17 @@ const AdminSignup = ({ hospitals }) => {
 
   const onRegister = async (data) => {
     let res = await adminSignup(data)
-    setFormData({
-      name: '',
-      email: '',
-      password: '',
-      hospital: ''
-    })
     if (res.status === 201) {
+      setFormData({
+        name: '',
+        email: '',
+        password: '',
+        hospital: ''
+      })
       const { token } = res.data
       localStorage.setItem("token", token)
+      const decoded = jwtDecode(token)
+      setUser(decoded)
     }
     else {
       toast.error(`${res.data.msg}`)

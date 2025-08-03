@@ -1,10 +1,14 @@
 import { useState } from "react"
 import { doctorLogin } from "../../api/doctor"
 import { toast } from "react-toastify"
+import { useAuth } from "../../hooks/useAuth"
+import { jwtDecode } from "jwt-decode"
 
 const DoctorLogin = () => {
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
+
+    const { setUser } = useAuth()
 
     const onLogin = async (credentials) => {
         let res = await doctorLogin(credentials)
@@ -13,6 +17,8 @@ const DoctorLogin = () => {
             setPassword("")
             const { token } = res.data
             localStorage.setItem("token", token)
+            const decoded = jwtDecode(token)
+            setUser(decoded)
         }
         else {
             toast.error(`${res.data.msg}`)

@@ -1,12 +1,14 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext, createContext } from "react";
 import { jwtDecode } from "jwt-decode"
 
-export default function useAuth() {
-    const isTokenExpired = (decoded) => {
-        if (!decoded?.exp) return true;
-        return decoded.exp * 1000 < Date.now();
-    }
+const AuthContext = createContext()
 
+const isTokenExpired = (decoded) => {
+    if (!decoded?.exp) return true;
+    return decoded.exp * 1000 < Date.now();
+}
+
+export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(() => {
         const token = localStorage.getItem("token")
 
@@ -50,5 +52,11 @@ export default function useAuth() {
         return () => window.removeEventListener("storage", handleStorage)
     }, [])
 
-    return { user, setUser }
+    return (
+        <AuthContext.Provider value={{ user, setUser }}>
+            {children}
+        </AuthContext.Provider>
+    )
 }
+
+export const useAuth = () => useContext(AuthContext)

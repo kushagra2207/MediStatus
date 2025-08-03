@@ -1,7 +1,12 @@
 import AppRouterProvider from "./router/AppRouter"
+import { AuthProvider } from "./hooks/useAuth"
 
 function App() {
-  return <AppRouterProvider />
+  return (
+    <AuthProvider>
+      <AppRouterProvider />
+    </AuthProvider>
+  )
 }
 
 export default App
