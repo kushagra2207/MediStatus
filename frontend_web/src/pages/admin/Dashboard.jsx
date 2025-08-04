@@ -13,7 +13,6 @@ const AdminDashboard = () => {
             const res = await getAdminById(user.id)
             if (res.status === 200) {
                 setAdmin(res.data)
-                console.log(res.data)
             }
             else {
                 toast.error(`${res.data.msg}`)
