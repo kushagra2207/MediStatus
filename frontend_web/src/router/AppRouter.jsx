@@ -14,11 +14,11 @@ import Signup from '../pages/auth/Signup'
 
 import AdminDashboard from '../pages/admin/Dashboard'
 import AdminMedicines from '../pages/admin/Medicines'
-import AdminProfile from '../pages/admin/Profile'
+import Doctors from '../pages/admin/Doctors'
 
 import DoctorDashboard from '../pages/doctor/Dashboard'
 import DoctorMedicines from '../pages/doctor/Medicines'
-import DoctorProfile from '../pages/doctor/Profile'
+import Availability from '../pages/doctor/Availability'
 
 import NotFound from '../pages/NotFound'
 
@@ -40,7 +40,7 @@ const router = createBrowserRouter([
                 children: [
                     { path: "dashboard", element: <AdminDashboard /> },
                     { path: "medicines", element: <AdminMedicines /> },
-                    { path: "profile", element: <AdminProfile /> }
+                    { path: "doctors", element: <Doctors /> }
                 ]
             },
 
@@ -50,7 +50,7 @@ const router = createBrowserRouter([
                 children: [
                     { path: "dashboard", element: <DoctorDashboard /> },
                     { path: "medicines", element: <DoctorMedicines /> },
-                    { path: "profile", element: <DoctorProfile /> }
+                    { path: "availability", element: <Availability /> }
                 ]
             }
         ]
