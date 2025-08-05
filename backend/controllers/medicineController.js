@@ -5,7 +5,10 @@ const addMedicine = async (req, res) => {
         const { name, quantity, hospital } = req.body
         const medicine = new Medicine({ name, quantity, hospital })
         await medicine.save()
-        res.status(201).json({ msg: "Medicine Added Successfully" })
+        res.status(201).json({
+            msg: "Medicine Added Successfully",
+            medicine: medicine
+        })
     }
     catch(error) {
         if(error.name === "ValidationError") {
@@ -18,10 +21,8 @@ const addMedicine = async (req, res) => {
 }
 
 const getMedicinesByHospital = async (req, res) => {
-    const { hospitalId } = req.params
-
     try {
-        const medicines = await Medicine.find({ hospital: hospitalId }).populate('hospital', 'name')
+        const medicines = await Medicine.find({ hospital: req.params.id })
         res.status(200).json(medicines)
     }
     catch(error) {
@@ -55,7 +56,7 @@ const deleteMedicine = async (req, res) => {
     try {
         const medicine = await Medicine.findByIdAndDelete(req.params.id)
         if (!medicine) return res.status(404).json({ msg: 'Medicine not found' })
-        res.status(200).json({ message: 'Medicine deleted successfully' })
+        res.status(200).json({ msg: 'Medicine deleted successfully' })
     }
     catch(error) {
         res.status(500).json({ msg: error.message })
