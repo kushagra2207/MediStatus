@@ -17,9 +17,11 @@ const addMedicine = async (req, res) => {
     }
 }
 
-const getAllMedicines = async (req, res) => {
+const getMedicinesByHospital = async (req, res) => {
+    const { hospitalId } = req.params
+
     try {
-        const medicines = await Medicine.find().populate('hospital', 'name')
+        const medicines = await Medicine.find({ hospital: hospitalId }).populate('hospital', 'name')
         res.status(200).json(medicines)
     }
     catch(error) {
@@ -62,7 +64,7 @@ const deleteMedicine = async (req, res) => {
 
 module.exports = {
     addMedicine,
-    getAllMedicines,
+    getMedicinesByHospital,
     updateMedicine,
     deleteMedicine
 };
