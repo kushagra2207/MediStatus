@@ -37,4 +37,52 @@ const getDoctorById = async (req, res) => {
     }
 }
 
-module.exports = { getAllDoctors, getDoctorByHospital, getDoctorById }
+const addAvailability = async (req, res) => {
+    try {
+        const doctor = req.user
+
+        doctor.availability.push(req.body)
+        await doctor.save()
+
+        res.status(200).json({ msg: "Availability Updated", availability: doctor.availability })
+    }
+    catch (error) {
+        res.status(500).json({ msg: error.message })
+    }
+}
+
+const editAvailability = async (req, res) => {
+    try {
+        const doctor = req.user
+        const index = req.params.index
+
+        if (!doctor.availability[index]) return res.status(400).json({ msg: "Invalid Availability Index" })
+        
+        doctor.availability[index] = req.body
+        await doctor.save()
+
+        res.status(200).json({ msg: "Availability Updated", availability: doctor.availability })
+    }
+    catch (error) {
+        res.status(500).json({ msg: error.message })
+    }
+}
+
+const deleteAvailability = async (req, res) => {
+    try {
+        const doctor = req.user
+        const index = req.params.index
+
+        if (!doctor.availability[index]) return res.status(400).json({ msg: "Invalid Availability Index" })
+
+        doctor.availability.splice(index, 1)
+        await doctor.save()
+
+        res.status(200).json({ msg: "Availability Removed", availability: doctor.availability })
+    }
+    catch (error) {
+        res.status(500).json({ msg: error.message })
+    }
+}
+
+module.exports = { getAllDoctors, getDoctorByHospital, getDoctorById, addAvailability, editAvailability, deleteAvailability }

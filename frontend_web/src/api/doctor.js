@@ -4,5 +4,9 @@ export const doctorLogin = (credentials) => fetchWrapper('/api/auth/doctor/login
 export const doctorSignup = (data) => fetchWrapper('/api/auth/doctor/signup', 'POST', data, false)
 
 export const getAllDoctors = () => fetchWrapper('/api/doctors', 'GET', null, false)
-export const getDoctorByHospital = (hospitalId) => fetchWrapper(`/api/doctors/${hospitalId}`, 'GET', null, false)
-export const getDoctorById = (id) => fetchWrapper(`/api/doctors/${id}`, 'GET', null, false)
+export const getDoctorByHospital = (hospitalId) => fetchWrapper(`/api/doctors/hospital/${hospitalId}`, 'GET', null, false)
+export const getDoctorById = (id) => fetchWrapper(`/api/doctors/id/${id}`, 'GET', null, false)
+
+export const addAvailability = (data) => fetchWrapper('/api/doctors/availability', 'POST', data)
+export const editAvailability = (index, data) => fetchWrapper(`/api/doctors/availability/${index}`, 'PUT', data)
+export const deleteAvailability = (index) => fetchWrapper(`/api/doctors/availability/${index}`, 'DELETE')
