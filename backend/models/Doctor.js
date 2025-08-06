@@ -10,9 +10,25 @@ const doctorSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    availableDays: [{type: String}],
-    availableTime: {
-        type: String,
+    availability: {
+        type: [
+            {
+                day: {
+                    type: String,
+                    required: true,
+                    enum: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+                },
+                from: {
+                    type: String,
+                    required: true
+                },
+                to: {
+                    type: String,
+                    required: true
+                }
+            }
+        ],
+        default: []
     },
     email: {
         type: String,
@@ -31,13 +47,13 @@ const doctorSchema = new mongoose.Schema({
 })
 
 // Hash Password before Save
-doctorSchema.pre("save", async function(next) {
-    if(!this.isModified("password")) return next();
+doctorSchema.pre("save", async function (next) {
+    if (!this.isModified("password")) return next();
     this.password = await bcrypt.hash(this.password, 10)
     next()
 })
 
-doctorSchema.methods.comparePassword = function(candidatePassword) {
+doctorSchema.methods.comparePassword = function (candidatePassword) {
     return bcrypt.compare(candidatePassword, this.password)
 }
 
