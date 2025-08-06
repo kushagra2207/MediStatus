@@ -12,6 +12,16 @@ const getAllDoctors = async (req, res) => {
     }
 };
 
+const getDoctorByHospital = async (req, res) => {
+    try {
+        const doctors = await Doctor.find({ hospital: req.params.hospitalId }).select('-password')
+        res.status(200).json(doctors)
+    }
+    catch (error) {
+        res.status(500).json({ msg: error.message })
+    }
+}
+
 const getDoctorById = async (req, res) => {
     try {
         const doctor = await Doctor.findById(req.params.id)
@@ -27,4 +37,4 @@ const getDoctorById = async (req, res) => {
     }
 }
 
-module.exports = { getAllDoctors, getDoctorById }
+module.exports = { getAllDoctors, getDoctorByHospital, getDoctorById }

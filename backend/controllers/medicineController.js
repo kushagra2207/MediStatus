@@ -22,7 +22,7 @@ const addMedicine = async (req, res) => {
 
 const getMedicinesByHospital = async (req, res) => {
     try {
-        const medicines = await Medicine.find({ hospital: req.params.id })
+        const medicines = await Medicine.find({ hospital: req.params.hospitalId })
         res.status(200).json(medicines)
     }
     catch(error) {

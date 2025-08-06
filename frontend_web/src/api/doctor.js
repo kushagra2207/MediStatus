@@ -4,4 +4,5 @@ export const doctorLogin = (credentials) => fetchWrapper('/api/auth/doctor/login
 export const doctorSignup = (data) => fetchWrapper('/api/auth/doctor/signup', 'POST', data, false)
 
 export const getAllDoctors = () => fetchWrapper('/api/doctors', 'GET', null, false)
+export const getDoctorByHospital = (hospitalId) => fetchWrapper(`/api/doctors/${hospitalId}`, 'GET', null, false)
 export const getDoctorById = (id) => fetchWrapper(`/api/doctors/${id}`, 'GET', null, false)
