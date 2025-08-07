@@ -44,7 +44,7 @@ const addAvailability = async (req, res) => {
         doctor.availability.push(req.body)
         await doctor.save()
 
-        res.status(200).json({ msg: "Availability Updated", availability: doctor.availability })
+        res.status(200).json({ msg: "Slot Added", availability: doctor.availability })
     }
     catch (error) {
         res.status(500).json({ msg: error.message })
@@ -61,7 +61,7 @@ const editAvailability = async (req, res) => {
         doctor.availability[index] = req.body
         await doctor.save()
 
-        res.status(200).json({ msg: "Availability Updated", availability: doctor.availability })
+        res.status(200).json({ msg: "Slot Updated", availability: doctor.availability })
     }
     catch (error) {
         res.status(500).json({ msg: error.message })
@@ -78,7 +78,7 @@ const deleteAvailability = async (req, res) => {
         doctor.availability.splice(index, 1)
         await doctor.save()
 
-        res.status(200).json({ msg: "Availability Removed", availability: doctor.availability })
+        res.status(200).json({ msg: "Slot Removed", availability: doctor.availability })
     }
     catch (error) {
         res.status(500).json({ msg: error.message })
