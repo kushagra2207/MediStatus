@@ -7,7 +7,6 @@ const authRateLimiter = rateLimit({
     standardHeaders: true,
     legacyHeaders: false,
     skipSuccessfulRequests: true,
-    skipFailedRequests: false,
 });
 
 const protectedRateLimiter = rateLimit({
@@ -16,8 +15,6 @@ const protectedRateLimiter = rateLimit({
     message: 'Too many requests from this IP, please try again after 15 minutes',
     standardHeaders: true,
     legacyHeaders: false,
-    skipSuccessfulRequests: false,
-    skipFailedRequests: false,
 });
 
 const publicRateLimiter = rateLimit({
@@ -26,8 +23,6 @@ const publicRateLimiter = rateLimit({
     message: 'Too many requests from this IP, please try again after 15 minutes',
     standardHeaders: true,
     legacyHeaders: false,
-    skipSuccessfulRequests: false,
-    skipFailedRequests: false,
 });
 
 module.exports = {
