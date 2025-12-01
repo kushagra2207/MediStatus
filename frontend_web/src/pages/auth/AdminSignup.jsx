@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { adminSignup } from "../../api/admin"
+import { adminGetOtp, adminVerifyOtp } from "../../api/admin"
 import { toast } from "react-toastify"
 import { useAuth } from "../../hooks/useAuth"
 import { jwtDecode } from "jwt-decode"
@@ -12,6 +12,9 @@ const AdminSignup = ({ hospitals }) => {
     hospital: ''
   })
 
+  const [otp, setOtp] = useState('')
+  const [otpSent, setOtpSent] = useState(false)
+
   const { setUser } = useAuth()
 
   const handleChange = (e) => {
@@ -22,8 +25,45 @@ const AdminSignup = ({ hospitals }) => {
     }))
   }
 
-  const onRegister = async (data) => {
-    const res = await adminSignup(data)
+  const handleSendOtp = async () => {
+    if (!formData.email) {
+      toast.error("Please enter email first")
+      return
+    }
+
+    const res = await adminGetOtp({ email: formData.email })
+
+    if (res.status === 200) {
+      setOtpSent(true)
+      toast.success(res.data.msg)
+    }
+    else {
+      toast.error(res.data.msg)
+    }
+  }
+
+  const onRegister = async () => {
+    if (!otpSent) {
+      toast.error("Please get OTP first")
+      return
+    }
+
+    if (!otp.trim()) {
+      toast.error("Please enter the OTP")
+      return
+    }
+
+    if (!formData.name || !formData.password || !formData.hospital) {
+      toast.error("Please fill all fields")
+      return
+    }
+
+    const payload = {
+      ...formData,
+      otp
+    }
+
+    const res = await adminVerifyOtp(payload)
     if (res.status === 201) {
       setFormData({
         name: '',
@@ -31,13 +71,16 @@ const AdminSignup = ({ hospitals }) => {
         password: '',
         hospital: ''
       })
+      setOtp('')
+      setOtpSent(false)
+
       const { token } = res.data
       localStorage.setItem("token", token)
       const decoded = jwtDecode(token)
       setUser(decoded)
     }
     else {
-      toast.error(`${res.data.msg}`)
+      toast.error(res.data.msg)
     }
   }
 
@@ -52,13 +95,32 @@ const AdminSignup = ({ hospitals }) => {
           value={formData.name}
           onChange={handleChange}
           placeholder='Enter Name' />
+        <div className="flex gap-2">
+          <input
+            className='outline flex-1'
+            type="email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            placeholder='Enter Email'
+            disabled={otpSent} // disable after OTP is sent
+          />
+          <button
+            className="bg-amber-200 cursor-pointer px-2"
+            type="button"
+            onClick={handleSendOtp}
+          >
+            Send OTP
+          </button>
+        </div>
         <input
           className='outline'
-          type="email"
-          name="email"
-          value={formData.email}
-          onChange={handleChange}
-          placeholder='Enter Email' />
+          type="text"
+          name="otp"
+          value={otp}
+          onChange={(e) => setOtp(e.target.value)}
+          placeholder='Enter OTP'
+        />
         <input
           className='outline'
           name="password"
@@ -83,7 +145,7 @@ const AdminSignup = ({ hospitals }) => {
       <div className="text-center my-4">
         <button
           className="bg-amber-200 cursor-pointer"
-          onClick={() => onRegister(formData)}
+          onClick={onRegister}
         >
           Signup
         </button>
