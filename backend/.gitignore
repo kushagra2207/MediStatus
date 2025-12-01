@@ -24,4 +24,5 @@ coverage/
 *.swp
 *.swo
 
-Google_OAuth_Client.json
+*Google_OAuth_Client.json
+*token.json
