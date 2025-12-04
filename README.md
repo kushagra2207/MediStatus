@@ -6,12 +6,12 @@ MediStatus is a modern hospital management system designed to streamline operati
 
 ## Features
 
-### Public Access (Mobile App)
+### Public Access (Mobile App & Web)
 - View comprehensive hospital directories with contact information
 - Search hospitals by name or location
 - Browse doctors by specialization
 - Access doctor availability schedules and timings
-- No authentication required for mobile app users
+- No authentication required
 
 ### Web Application Features
 - Public hospital and doctor listings
@@ -20,21 +20,11 @@ MediStatus is a modern hospital management system designed to streamline operati
 - **Doctor Dashboard**: View medicines, manage personal availability schedule
 
 ### Security
-- JWT-based authentication
+- JWT-based authentication with OTP verification
 - Password encryption using bcrypt
 - Role-based route protection
 - Rate limiting on API endpoints
 - CORS protection
-
-### Medicine Management
-- Track medicine inventory by hospital
-- Add, update, and delete medicines
-- View availability status
-
-### Doctor Management
-- Set availability schedules (days and time slots)
-- View and manage doctor profiles
-- Link doctors to hospitals
 
 ## Technology Stack
 
@@ -42,9 +32,8 @@ MediStatus is a modern hospital management system designed to streamline operati
 - **Runtime**: Node.js
 - **Framework**: Express.js
 - **Database**: MongoDB with Mongoose ODM
-- **Authentication**: JSON Web Tokens (JWT)
-- **Security**: bcrypt for password hashing
-- **Rate Limiting**: express-rate-limit
+- **Authentication**: JSON Web Tokens (JWT) with OTP verification
+- **Security**: bcrypt, Gmail integration for OTP delivery
 
 ### Frontend Web
 - **Framework**: React 19
@@ -53,186 +42,122 @@ MediStatus is a modern hospital management system designed to streamline operati
 - **Styling**: Tailwind CSS
 - **UI Components**: React Icons
 - **Notifications**: React Toastify
-- **HTTP Client**: Fetch API with JWT support
 
 ### Frontend Mobile
 - **Framework**: Flutter
 - **Language**: Dart
-- **Platform**: Cross-platform
-- **Purpose**: Public-facing app for viewing hospitals and doctor availability (no authentication required)
+- **Purpose**: Cross-platform public app for viewing hospitals and doctor availability
 
 ## Project Structure
 
 ```
 MediStatus/
-├── backend/              # Node.js/Express backend API
-│   ├── config/          # Database configuration
-│   ├── controllers/     # Route controllers
-│   ├── middlewares/     # Auth, rate limiting
-│   ├── models/          # Mongoose models
-│   ├── routes/          # API routes
-│   ├── utils/           # JWT utilities
-│   └── server.js        # Entry point
-├── frontend_web/        # React web application
-│   ├── src/
-│   │   ├── api/        # API service calls
-│   │   ├── components/ # Reusable components
-│   │   ├── hooks/      # Custom React hooks
-│   │   ├── layout/     # Layout components
-│   │   ├── pages/      # Page components
-│   │   └── router/     # Routing configuration
-│   └── public/         # Static assets
-└── frontend_mobile/     # Flutter mobile application
-    ├── lib/            # Dart source code
-    ├── android/        # Android configuration
-    ├── ios/            # iOS configuration
-    └── pubspec.yaml    # Flutter dependencies
+├── backend/              # Node.js/Express API - See backend/README.md for details
+├── frontend_web/         # React web application - See frontend_web/README.md for details
+└── frontend_mobile/      # Flutter mobile application
 ```
 
-## Getting Started
+## Quick Start
 
 ### Prerequisites
 - Node.js (v14 or higher)
-- MongoDB (local installation or MongoDB Atlas)
+- MongoDB (local or MongoDB Atlas)
 - npm or yarn
-- Flutter SDK (for mobile development)
+- Flutter SDK (for mobile)
 
 ### Installation
 
-1. Clone the repository:
+1. **Clone and navigate to project:**
 ```bash
 git clone <repository-url>
 cd MediStatus
 ```
 
-2. Set up the backend (see [backend/README.md](backend/README.md) for details):
+2. **Backend Setup** (see [backend/README.md](backend/README.md)):
 ```bash
 cd backend
 npm install
 ```
 
-3. Set up the web frontend (see [frontend_web/README.md](frontend_web/README.md) for details):
+3. **Frontend Web Setup** (see [frontend_web/README.md](frontend_web/README.md)):
 ```bash
 cd ../frontend_web
 npm install
 ```
 
-4. Set up the mobile app (see [frontend_mobile/README.md](frontend_mobile/README.md) for details):
+4. **Mobile App Setup** (see frontend_mobile/README.md):
 ```bash
 cd ../frontend_mobile
 flutter pub get
 ```
 
-## Environment Variables
-
-Create a `.env` file in the backend directory with the following variables:
-
-```env
-MONGODB_URI=your_mongodb_connection_string
-JWT_SECRET=your_jwt_secret_key
-PORT=5000
-FRONTEND_URL=http://localhost:5173
-```
-
 ## Running the Application
 
-1. Start MongoDB (if running locally)
+1. **Start MongoDB** (if running locally)
 
-2. Start the backend server:
+2. **Start Backend:**
 ```bash
 cd backend
 npm run dev
 ```
 
-3. Start the web frontend:
+3. **Start Web Frontend:**
 ```bash
 cd frontend_web
 npm run dev
 ```
 
-4. Run the mobile app:
+4. **Run Mobile App:**
 ```bash
 cd frontend_mobile
 flutter run
 ```
 
-## API Endpoints
+## API Overview
 
-### Public Endpoints
-- `GET /` - Server health check
-- `GET /api/hospitals` - Get all hospitals
-- `POST /api/hospitals` - Register a new hospital
+For detailed API documentation, see [backend/README.md](backend/README.md)
 
-### Authentication Endpoints
-- `POST /api/auth/admin/login` - Admin login
-- `POST /api/auth/admin/signup` - Admin signup
-- `POST /api/auth/doctor/login` - Doctor login
-- `POST /api/auth/doctor/signup` - Doctor signup
-
-### Protected Endpoints (Require Authentication)
-- `POST /api/medicines` - Add medicine (Admin only)
-- `GET /api/medicines/:hospitalId` - Get medicines by hospital
-- `PATCH /api/medicines/:id` - Update medicine (Admin only)
-- `DELETE /api/medicines/:id` - Delete medicine (Admin only)
-- `GET /api/doctors` - Get doctors
-- `GET /api/admins` - Get admins
+**Key Endpoints:**
+- Public: `GET /api/hospitals`, `POST /api/hospitals`
+- Auth: `/api/auth/admin/signup-*`, `/api/auth/doctor/signup-*`, login endpoints
+- Protected: Medicine, Doctor, and Admin management endpoints
 
 ## Key Features Implementation
 
-### Authentication Flow
-1. User signs up with email and password
-2. Password is hashed using bcrypt before storage
-3. JWT token is generated upon successful login
-4. Token is stored in localStorage (web) or secure storage (mobile)
-5. Protected routes verify token on each request
+### Authentication Flow (OTP-Based)
+1. User enters email and clicks "Send OTP"
+2. OTP is sent to their email via Gmail
+3. User enters OTP and other details
+4. System verifies OTP and creates account
+5. JWT token is issued for session management
 
 ### Role-Based Access
 - Doctors and Admins have different permissions
 - Admins can manage medicines and doctors
-- Doctors can view medicines and manage their availability
+- Doctors can view medicines and manage availability
 - Middleware enforces role-based access control
-
-### Rate Limiting
-- Public endpoints have relaxed rate limits
-- Authentication endpoints have moderate limits
-- Protected endpoints have stricter limits to prevent abuse
 
 ## Security Considerations
 
-- Passwords are hashed using bcrypt with salt rounds
-- JWT tokens are signed with a secret key
-- API endpoints are rate-limited to prevent abuse
-- CORS is configured to allow only specific origins
-- Protected routes require valid authentication tokens
-- Role-based access control prevents unauthorized actions
+- Passwords hashed with bcrypt (salt rounds: 10)
+- JWT tokens signed with secret key
+- API rate limiting prevents abuse
+- CORS restricted to known frontend URLs
+- OTP verification adds extra authentication layer
+- Protected routes require valid tokens
 
-## Development
+## Detailed Documentation
 
-### Backend Development
-- Uses Node.js watch mode for auto-reload during development
-- Follows MVC architecture pattern
-- Controllers handle business logic
-- Models define database schema
-- Middlewares handle cross-cutting concerns
-
-### Frontend Development
-- React with functional components and hooks
-- React Router for client-side routing
-- Protected routes redirect unauthenticated users
-- Custom hooks for auth state management
-- API layer abstracts HTTP communication
-
-## Future Enhancements
-
-- Patient appointment scheduling
-- Real-time notifications
-- Medicine expiration tracking
-- Advanced search and filtering
-- Analytics and reporting
-- Mobile app full implementation
-- Email notifications
-- Multi-language support
+- **Backend API & Setup**: See [backend/README.md](backend/README.md)
+- **Frontend Web Setup**: See [frontend_web/README.md](frontend_web/README.md)
+- **Mobile App**: See frontend_mobile/README.md
 
 ## Author
 
 Kushagra Kumar Arora
+
+---
+
+**For detailed backend API documentation and configuration, please refer to [backend/README.md](backend/README.md)**
+
+**For frontend setup and component documentation, please refer to [frontend_web/README.md](frontend_web/README.md)**

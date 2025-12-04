@@ -124,6 +124,7 @@ The application will start on `http://localhost:5173` (Vite default port).
 
 ### Authentication
 - Separate login/signup pages for admins and doctors
+- OTP-based signup process with email verification
 - JWT token stored in localStorage
 - Automatic redirect based on authentication status
 - Role-based navigation in the navbar
@@ -188,6 +189,20 @@ All API calls are made through the service layer in `src/api/`:
 ### API Base URL
 The API base URL is configured in individual API files. Default: `http://localhost:5000/api`
 
+### OTP-Based Signup Integration
+The signup flow integrates with the backend's OTP verification:
+
+1. **Admin/Doctor Signup Step 1**: Enter email and click "Send OTP"
+   - Calls `POST /api/auth/admin/signup-getOtp` or `/api/auth/doctor/signup-getOtp`
+   - OTP is sent to the provided email
+   - User receives the OTP on the email
+
+2. **Admin/Doctor Signup Step 2**: Enter OTP and other details
+   - Calls `POST /api/auth/admin/signup-verifyOtp` or `/api/auth/doctor/signup-verifyOtp`
+   - System verifies OTP and creates account
+   - JWT token is returned on successful verification
+   - User is logged in automatically
+
 ## Development
 
 ### Available Scripts
@@ -228,6 +243,7 @@ The application uses `localStorage` for:
 - Form validation errors are shown inline
 - Network errors display user-friendly messages
 - 401 errors automatically log out the user
+- OTP errors (invalid or expired) are displayed with guidance
 
 ## Security Considerations
 
@@ -236,6 +252,7 @@ The application uses `localStorage` for:
 - Protected routes enforce authentication
 - Role-based access control on the client side
 - HTTPS should be used in production
+- OTP input is validated before submission
 
 ## Troubleshooting
 
@@ -252,17 +269,16 @@ The application uses `localStorage` for:
 - Clear localStorage and re-login
 - Check token expiration
 - Verify JWT_SECRET in backend matches
+- For signup issues, ensure backend email configuration is set up
 
-## Deployment
+### OTP Issues
+- Verify Gmail credentials are configured in backend
+- Check that OTP was sent (check spam folder)
+- Ensure OTP hasn't expired (typically 10-15 minutes)
+- Re-request OTP if expired
 
-The application can be deployed to:
-- Vercel
-- Netlify
-- GitHub Pages
-- Any static hosting service
+---
 
-Ensure to:
-1. Set environment variables in hosting platform
-2. Configure API URL for production backend
-3. Enable HTTPS
-4. Set up proper CORS on backend
+**For complete project information, see [../README.md](../README.md)**
+
+**For backend API details, see [../backend/README.md](../backend/README.md)**
