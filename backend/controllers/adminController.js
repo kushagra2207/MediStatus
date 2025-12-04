@@ -4,7 +4,7 @@ const getAdminById = async (req, res) => {
     try {
         const admin = await Admin.findById(req.params.id)
             .select('-password')
-            .populate('hospital', 'name')
+            .populate('hospital', 'name address contact')
         if (!admin) {
             return res.status(404).json({ msg: 'Admin not found' })
         }

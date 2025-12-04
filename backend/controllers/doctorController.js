@@ -4,7 +4,7 @@ const getAllDoctors = async (req, res) => {
     try {
         const doctors = await Doctor.find()
             .select('-password')
-            .populate('hospital', 'name')
+            .populate('hospital', 'name address contact')
         res.status(200).json(doctors)
     }
     catch (error) {
@@ -14,7 +14,8 @@ const getAllDoctors = async (req, res) => {
 
 const getDoctorByHospital = async (req, res) => {
     try {
-        const doctors = await Doctor.find({ hospital: req.params.hospitalId }).select('-password')
+        const doctors = await Doctor.find({ hospital: req.params.hospitalId })
+            .select('-password')
         res.status(200).json(doctors)
     }
     catch (error) {
@@ -26,7 +27,7 @@ const getDoctorById = async (req, res) => {
     try {
         const doctor = await Doctor.findById(req.params.id)
             .select('-password')
-            .populate('hospital', 'name')
+            .populate('hospital', 'name address contact')
         if (!doctor) {
             return res.status(404).json({ msg: 'Doctor not found' })
         }
@@ -57,7 +58,7 @@ const editAvailability = async (req, res) => {
         const index = req.params.index
 
         if (!doctor.availability[index]) return res.status(400).json({ msg: "Invalid Availability Index" })
-        
+
         doctor.availability[index] = req.body
         await doctor.save()
 
