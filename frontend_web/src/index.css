@@ -4,3 +4,24 @@ body {
     font-family: 'Lato', sans-serif;
 }
 
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #c5c5c5;
+    border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: #a8a8a8;
+}
+
+* {
+    scrollbar-width: thin;
+    scrollbar-color: #c5c5c5 transparent;
+}
