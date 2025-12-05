@@ -3,16 +3,12 @@ import { useAuth } from "../../hooks/useAuth"
 import { getDoctorById } from "../../api/doctor"
 import { toast } from "react-toastify"
 import { FaUserMd, FaHospital, FaMapMarkerAlt, FaPhone, FaStethoscope, FaPills, FaClock } from "react-icons/fa"
-import { MdDashboard } from "react-icons/md"
 import { Link } from "react-router-dom"
-
 
 const DoctorDashboard = () => {
   const { user } = useAuth()
 
-
   const [doctor, setDoctor] = useState(null)
-
 
   useEffect(() => {
     const getDoctor = async () => {
@@ -26,7 +22,6 @@ const DoctorDashboard = () => {
     }
     getDoctor()
   }, [])
-
 
   if(!doctor) return (
     <div className="min-h-[calc(100vh-72px)] bg-gradient-to-br from-blue-100 via-sky-50 to-blue-50 flex items-center justify-center">
@@ -59,12 +54,7 @@ const DoctorDashboard = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 flex-1 min-h-0">
                 <div className="bg-white rounded-2xl shadow-xl p-4 sm:p-6 lg:p-8 border border-blue-100 flex flex-col overflow-auto">
-                    <div className="flex items-center gap-3 mb-4 sm:mb-6 flex-shrink-0">
-                        <div className="bg-sky-600 w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center shadow-md">
-                            <FaHospital className="text-white text-lg sm:text-2xl" />
-                        </div>
-                        <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-sky-900">Hospital Information</h2>
-                    </div>
+                    <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-sky-900 mb-4 sm:mb-6">Hospital Information</h2>
                     <div className="space-y-3 sm:space-y-4 flex-1 overflow-auto">
                         <div className="flex items-start gap-3 p-3 sm:p-4 bg-blue-50 rounded-xl">
                             <FaHospital className="text-sky-600 text-lg sm:text-xl mt-1 flex-shrink-0" />
@@ -91,12 +81,7 @@ const DoctorDashboard = () => {
                 </div>
 
                 <div className="bg-white rounded-2xl shadow-xl p-4 sm:p-6 lg:p-8 border border-blue-100 flex flex-col overflow-auto">
-                    <div className="flex items-center gap-3 mb-4 sm:mb-6 flex-shrink-0">
-                        <div className="bg-sky-600 w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center shadow-md">
-                            <MdDashboard className="text-white text-lg sm:text-2xl" />
-                        </div>
-                        <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-sky-900">Quick Actions</h2>
-                    </div>
+                    <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-sky-900 mb-4 sm:mb-6">Quick Actions</h2>
                     <div className="space-y-3 sm:space-y-4 flex-1 overflow-auto">
                         <Link
                             to="/doctor/medicines"
@@ -141,6 +126,5 @@ const DoctorDashboard = () => {
     </div>
   )
 }
-
 
 export default DoctorDashboard
