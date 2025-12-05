@@ -3,6 +3,8 @@ import { doctorGetOtp, doctorVerifyOtp } from "../../api/doctor"
 import { toast } from "react-toastify"
 import { useAuth } from "../../hooks/useAuth"
 import { jwtDecode } from "jwt-decode"
+import { FaUser, FaEnvelope, FaLock, FaHospital, FaUserMd, FaStethoscope } from "react-icons/fa"
+import { MdVerifiedUser } from "react-icons/md"
 
 const DoctorSignup = ({ hospitals }) => {
   const [formData, setFormData] = useState({
@@ -86,79 +88,133 @@ const DoctorSignup = ({ hospitals }) => {
   }
 
   return (
-    <div>
-      <div className='text-center'>Doctor Signup</div>
-      <div className='flex flex-col gap-4'>
-        <input
-          className='outline'
-          type="text"
-          name="name"
-          value={formData.name}
-          onChange={handleChange}
-          placeholder='Enter Name'
-        />
-        <input
-          className='outline'
-          type="text"
-          name="specialization"
-          value={formData.specialization}
-          onChange={handleChange}
-          placeholder='Enter Specialization'
-        />
-        <div className="flex gap-2">
-          <input
-            className='outline flex-1'
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            placeholder='Enter Email'
-            disabled={otpSent} // same behavior as admin signup
-          />
-          <button
-            className="bg-amber-200 cursor-pointer px-2"
-            type="button"
-            onClick={handleSendOtp}
-          >
-            Send OTP
-          </button>
+    <div className="bg-white rounded-2xl shadow-xl p-6 sm:p-8 border border-blue-100">
+      <div className='text-center mb-6'>
+        <div className="bg-sky-600 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+          <FaUserMd className="text-white text-3xl" />
         </div>
-        <input
-          className='outline'
-          type="text"
-          name="otp"
-          value={otp}
-          onChange={(e) => setOtp(e.target.value)}
-          placeholder='Enter OTP'
-        />
-        <input
-          className='outline'
-          type="password"
-          name="password"
-          value={formData.password}
-          onChange={handleChange}
-          placeholder='Enter Password'
-        />
-        <select
-          className='outline'
-          name="hospital"
-          value={formData.hospital}
-          onChange={handleChange}
-        >
-          <option value="" disabled>Select Hospital</option>
-          {hospitals.map(h => (
-            <option key={h._id} value={h._id}>
-              {h.name} ({h.address})
-            </option>
-          ))}
-        </select>
+        <h2 className="text-2xl sm:text-3xl font-bold text-sky-900">Doctor Signup</h2>
+        <p className="text-gray-600 mt-2">Create your doctor account</p>
       </div>
-      <div className="text-center my-4">
+
+      <div className='flex flex-col gap-4'>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-semibold text-sky-900 mb-2">Name</label>
+            <div className="relative">
+              <FaUser className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+              <input
+                className='w-full p-4 pl-12 rounded-xl border border-blue-100 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent shadow-sm transition-all duration-200'
+                type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                placeholder='Enter Name'
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-sky-900 mb-2">Specialization</label>
+            <div className="relative">
+              <FaStethoscope className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+              <input
+                className='w-full p-4 pl-12 rounded-xl border border-blue-100 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent shadow-sm transition-all duration-200'
+                type="text"
+                name="specialization"
+                value={formData.specialization}
+                onChange={handleChange}
+                placeholder='Enter Specialization'
+              />
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-semibold text-sky-900 mb-2">Email</label>
+          <div className="flex gap-2">
+            <div className="relative flex-1">
+              <FaEnvelope className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+              <input
+                className='w-full p-4 pl-12 rounded-xl border border-blue-100 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent shadow-sm transition-all duration-200 disabled:bg-gray-100 disabled:cursor-not-allowed'
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                placeholder='Enter Email'
+                disabled={otpSent}
+              />
+            </div>
+            <button
+              className="bg-sky-600 hover:bg-sky-700 text-white px-4 sm:px-6 rounded-xl font-semibold transition-colors duration-200 shadow-md whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
+              type="button"
+              onClick={handleSendOtp}
+              disabled={otpSent}
+            >
+              Send OTP
+            </button>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-semibold text-sky-900 mb-2">OTP</label>
+            <div className="relative">
+              <MdVerifiedUser className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+              <input
+                className='w-full p-4 pl-12 rounded-xl border border-blue-100 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent shadow-sm transition-all duration-200'
+                type="text"
+                name="otp"
+                value={otp}
+                onChange={(e) => setOtp(e.target.value)}
+                placeholder='Enter OTP'
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-sky-900 mb-2">Password</label>
+            <div className="relative">
+              <FaLock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+              <input
+                className='w-full p-4 pl-12 rounded-xl border border-blue-100 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent shadow-sm transition-all duration-200'
+                type="password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                placeholder='Enter Password'
+              />
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-semibold text-sky-900 mb-2">Hospital</label>
+          <div className="relative">
+            <FaHospital className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none z-10" />
+            <select
+              className='w-full p-4 pl-12 rounded-xl border border-blue-100 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent shadow-sm transition-all duration-200 appearance-none bg-white'
+              name="hospital"
+              value={formData.hospital}
+              onChange={handleChange}
+            >
+              <option value="" disabled>Select Hospital</option>
+              {hospitals.map(h => (
+                <option key={h._id} value={h._id}>
+                  {h.name} ({h.address})
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-6">
         <button
-          className="bg-amber-200 cursor-pointer"
+          className="w-full bg-sky-600 hover:bg-sky-700 text-white py-4 rounded-xl font-semibold text-lg transition-colors duration-200 shadow-lg hover:shadow-xl"
           onClick={onRegister}
         >
-          Signup
+          Create Doctor Account
         </button>
       </div>
     </div>
