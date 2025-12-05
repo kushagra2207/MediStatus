@@ -1,7 +1,6 @@
 import { Link } from 'react-router-dom'
 import { FaHome, FaExclamationTriangle } from 'react-icons/fa'
 
-
 const NotFound = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-100 via-sky-50 to-blue-50 flex items-center justify-center p-4 sm:p-6">
@@ -35,6 +34,5 @@ const NotFound = () => {
     </div>
   )
 }
-
 
 export default NotFound
