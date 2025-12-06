@@ -50,6 +50,10 @@ app.use('/api/doctors', doctorRoutes)
 app.use('/api/medicines', medicineRoutes)
 app.use('/api/admins', adminRoutes)
 
+app.get("/health", (req, res) => {
+  res.status(200).json({ status: "ok" })
+})
+
 const PORT = process.env.PORT || 5000
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`)

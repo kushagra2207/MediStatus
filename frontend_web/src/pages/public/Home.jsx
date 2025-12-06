@@ -5,16 +5,33 @@ import { MdMedicalServices, MdDashboard } from 'react-icons/md';
 const Home = () => {
     return (
         <div className="min-h-screen bg-gradient-to-br from-blue-100 via-sky-50 to-blue-50">
+            {(loading || !serverOnline) && (
+                <div className="fixed bottom-4 right-4 z-50">
+                    {loading && serverOnline && (
+                        <div className="rounded-full bg-slate-900/90 text-slate-50 text-xs px-3 py-1.5 shadow-lg flex items-center gap-2">
+                            <span className="h-2 w-2 rounded-full bg-amber-400 animate-pulse" />
+                            <span>Connecting to server…</span>
+                        </div>
+                    )}
+
+                    {!loading && !serverOnline && (
+                        <div className="rounded-full bg-red-600 text-white text-xs px-3 py-1.5 shadow-lg flex items-center gap-2">
+                            <span className="h-2 w-2 rounded-full bg-white/80" />
+                            <span>Server unreachable</span>
+                        </div>
+                    )}
+                </div>
+            )}
             <section className="py-12 sm:py-16 md:py-20 px-4 sm:px-6">
                 <div className="max-w-4xl mx-auto text-center">
                     <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-sky-900 mb-4 sm:mb-6 drop-shadow-sm leading-tight">
                         MediStatus
                     </h1>
                     <p className="text-base sm:text-lg md:text-xl text-gray-800 leading-relaxed max-w-3xl mx-auto mb-8 sm:mb-10 px-2">
-                        A modern hospital management system designed to simplify how public and government hospitals 
-                        share information and manage internal resources. From making hospital details and doctor availability 
-                        timings easily accessible to the public — helping patients avoid unnecessary waiting — to securely 
-                        managing medicine inventories, MediStatus helps hospitals operate more efficiently with clarity, 
+                        A modern hospital management system designed to simplify how public and government hospitals
+                        share information and manage internal resources. From making hospital details and doctor availability
+                        timings easily accessible to the public — helping patients avoid unnecessary waiting — to securely
+                        managing medicine inventories, MediStatus helps hospitals operate more efficiently with clarity,
                         security, and transparency at its core.
                     </p>
                     <Link

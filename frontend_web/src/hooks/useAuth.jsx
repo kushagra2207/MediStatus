@@ -1,3 +1,5 @@
+const BASE_URL = import.meta.env.VITE_API_BASE_URL
+
 import { useState, useEffect, useContext, createContext } from "react";
 import { jwtDecode } from "jwt-decode"
 
@@ -27,6 +29,9 @@ export const AuthProvider = ({ children }) => {
         }
     })
 
+    const [loading, setLoading] = useState(true)
+    const [serverOnline, setServerOnline] = useState(true)
+
     useEffect(() => {
         const handleStorage = () => {
             const token = localStorage.getItem("token")
@@ -49,11 +54,32 @@ export const AuthProvider = ({ children }) => {
         }
 
         window.addEventListener("storage", handleStorage)
+
+        const checkServer = async () => {
+            setLoading(true)
+            try {
+                const res = await fetch(`${BASE_URL}/health`, { method: "GET" })
+
+                if (res.ok) {
+                    setServerOnline(true)
+                }
+                else {
+                    setServerOnline(false)
+                }
+            } catch (err) {
+                setServerOnline(false)
+            } finally {
+                setLoading(false)
+            }
+        }
+
+        checkServer()
+
         return () => window.removeEventListener("storage", handleStorage)
     }, [])
 
     return (
-        <AuthContext.Provider value={{ user, setUser }}>
+        <AuthContext.Provider value={{ user, setUser, loading, serverOnline }}>
             {children}
         </AuthContext.Provider>
     )
