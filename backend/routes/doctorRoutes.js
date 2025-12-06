@@ -12,7 +12,6 @@ const { protectedRateLimiter, publicRateLimiter } = require('../middlewares/rate
 
 const router = express.Router()
 
-router.get('/', publicRateLimiter, getAllDoctors)
 router.get('/hospital/:hospitalId', publicRateLimiter, getDoctorByHospital)
 router.get('/id/:id', publicRateLimiter, getDoctorById)
 
