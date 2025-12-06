@@ -1,8 +1,11 @@
 import { Link } from 'react-router-dom';
+import { useAuth } from '../../hooks/useAuth';
 import { FaHospital, FaUserMd, FaMobileAlt, FaShieldAlt } from 'react-icons/fa';
 import { MdMedicalServices, MdDashboard } from 'react-icons/md';
 
 const Home = () => {
+    const { loading, serverOnline } = useAuth()
+
     return (
         <div className="min-h-screen bg-gradient-to-br from-blue-100 via-sky-50 to-blue-50">
             {(loading || !serverOnline) && (
