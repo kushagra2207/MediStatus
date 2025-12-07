@@ -1,67 +1,54 @@
-const nodemailer = require('nodemailer')
-const { google } = require('googleapis')
-
-const SENDER_EMAIL = process.env.EMAIL
-const CLIENT_ID = process.env.GMAIL_CLIENT_ID
-const CLIENT_SECRET = process.env.GMAIL_CLIENT_SECRET
-const REFRESH_TOKEN = process.env.GMAIL_REFRESH_TOKEN
-
-console.log("MAILER CONFIG:");
-console.log("  SENDER_EMAIL:", SENDER_EMAIL);
-console.log("  CLIENT_ID set:", !!CLIENT_ID);
-console.log("  CLIENT_SECRET set:", !!CLIENT_SECRET);
-console.log("  REFRESH_TOKEN set:", !!REFRESH_TOKEN);
+const { google } = require('googleapis');
 
 const oAuth2Client = new google.auth.OAuth2(
-  CLIENT_ID, 
-  CLIENT_SECRET
-)
+  process.env.GMAIL_CLIENT_ID,
+  process.env.GMAIL_CLIENT_SECRET
+);
 
 oAuth2Client.setCredentials({
-  refresh_token: REFRESH_TOKEN
-})
+  refresh_token: process.env.GMAIL_REFRESH_TOKEN,
+});
 
-async function sendEmail(to, subject, htmlOrText) {
+async function sendOtpEmail(toEmail, otp) {
   try {
-    const accessTokenResponse = await oAuth2Client.getAccessToken();
-    const accessToken = accessTokenResponse?.token || accessTokenResponse;
+    const gmail = google.gmail({ version: 'v1', auth: oAuth2Client });
 
-    if (!accessToken) {
-      console.error("Mailer: no access token received");
-      throw new Error("Failed to obtain access token from Google");
-    }
+    const subject = 'Your OTP Code';
 
-    console.log("Mailer: got access token, creating transporter...")
+    const messageParts = [
+      `From: ${process.env.GMAIL_USER}`,
+      `To: ${toEmail}`,
+      'Content-Type: text/html; charset=utf-8',
+      'MIME-Version: 1.0',
+      `Subject: ${subject}`,
+      '',
+      `
+        <p>Your one-time password (OTP) is:</p>
+        <h2>${otp}</h2>
+        <p>This code will expire in 5 minutes.</p>
+        <p>If you did not request this, you can ignore this email.</p>
+      `,
+    ];
 
-    const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        type: 'OAuth2',
-        user: SENDER_EMAIL,
-        clientId: CLIENT_ID,
-        clientSecret: CLIENT_SECRET,
-        refreshToken: REFRESH_TOKEN,
-        accessToken: accessToken
+    const message = messageParts.join('\n');
+
+    const encodedMessage = Buffer.from(message)
+      .toString('base64')
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_')
+      .replace(/=+$/, '');
+
+    const response = await gmail.users.messages.send({
+      userId: 'me',
+      requestBody: {
+        raw: encodedMessage,
       },
-      connectionTimeout: 15000,
-      socketTimeout: 15000
     });
 
-    const mailOptions = {
-      from: `MediStatus <${SENDER_EMAIL}>`,
-      to,
-      subject,
-      html: htmlOrText
-    };
-
-    console.log("Mailer: sending email to", to);
-    const result = await transporter.sendMail(mailOptions);
-    console.log("Mailer: email sent, messageId:", result.messageId);
-    return result;
-  } catch (err) {
-    console.error("Mailer: error while sending email:", err);
-    throw err;
+    return response.data;
+  } catch (error) {
+    throw new Error('Failed to send OTP email');
   }
 }
 
-module.exports = { sendEmail };
+module.exports = { sendOtpEmail };

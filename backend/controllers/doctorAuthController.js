@@ -2,7 +2,7 @@ const Doctor = require("../models/Doctor")
 const Otp = require("../models/Otp")
 const { createToken } = require("../utils/jwt")
 const bcrypt = require("bcrypt")
-const mailer = require("../utils/mailer")
+const { sendOtpEmail } = require('../utils/mailer')
 
 const sendDoctorOtp = async (req, res) => {
   try {
@@ -26,11 +26,7 @@ const sendDoctorOtp = async (req, res) => {
       { upsert: true, new: true }
     );
 
-    await mailer.sendEmail(
-      email,
-      "OTP for MediStatus Doctor Signup",
-      `<p>Your OTP is: <b>${otp}</b></p>`
-    );
+    await sendOtpEmail(email, otp)
 
     res.status(200).json({ msg: "OTP sent to email" })
   }

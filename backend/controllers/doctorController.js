@@ -75,4 +75,4 @@ const deleteAvailability = async (req, res) => {
     }
 }
 
-module.exports = { getAllDoctors, getDoctorByHospital, getDoctorById, addAvailability, editAvailability, deleteAvailability }
+module.exports = { getDoctorByHospital, getDoctorById, addAvailability, editAvailability, deleteAvailability }
