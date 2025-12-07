@@ -1,4 +1,4 @@
-# Flutter build and tooling
+# Flutter build
 build/
 .dart_tool/
 .packages
@@ -7,8 +7,19 @@ build/
 .pub-cache/
 .pub/
 
+# Flutter/Dart documentation
+**/doc/api/
+
+# Metadata
+.metadata
+
+# Coverage
+/coverage/
+
 # IDE settings
 .idea/
+
+# vscode settings
 .vscode/
 
 # System files
@@ -24,10 +35,12 @@ app.*.symbols
 # Obfuscation related
 app.*.map.json
 
-# iOS/Android specific files (auto-generated)
+# iOS/Android specific files
 ios/Flutter/Generated.xcconfig
-android/local.properties
 **/ios/Flutter/.last_build_id
+android/local.properties
+
+# Android Studio build variants
 /android/app/debug
 /android/app/profile
 /android/app/release
@@ -57,9 +70,3 @@ migrate_working_dir/
 *.iml
 *.ipr
 *.iws
-
-# Flutter/Dart documentation
-**/doc/api/
-
-# Metadata
-.metadata
