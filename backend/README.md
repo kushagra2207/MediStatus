@@ -13,7 +13,6 @@ The MediStatus backend is a RESTful API built with Node.js and Express.js that p
 - **Security**: bcrypt 6.0.0 for password hashing, Gmail API for OTP delivery
 - **Rate Limiting**: express-rate-limit 8.1.0
 - **CORS**: cors 2.8.5
-- **Email**: nodemailer 7.0.11
 - **Environment**: dotenv 17.1.0
 
 ## Project Structure
@@ -223,17 +222,20 @@ Delete a medicine (Admin only)
 
 #### Doctors
 ```
-GET /api/doctors
+GET /api/doctors/hospital/:hospitalId
 ```
-Get all doctors
-- Requires: Authentication
+Get all doctors from a specific hospital
+
+```
+GET /api/doctor/id/:id
+```
+Get specific doctor
 
 #### Admins
 ```
-GET /api/admins
+GET /api/admins/id/:id
 ```
-Get all admins
-- Requires: Authentication
+Get specific admin
 
 ## Data Models
 
