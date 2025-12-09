@@ -11,10 +11,18 @@ class AppLoading extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const CircularProgressIndicator(),
+          const CircularProgressIndicator(
+            color: Color(0xFF0284C7),
+          ),
           if (message != null) ...[
-            const SizedBox(height: 8),
-            Text(message!)
+            const SizedBox(height: 16),
+            Text(
+              message!,
+              style: const TextStyle(
+                fontSize: 14,
+                color: Colors.black54,
+              ),
+            )
           ]
         ]
       ),
