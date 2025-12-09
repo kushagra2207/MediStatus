@@ -10,7 +10,9 @@ class MediStatusApp extends StatelessWidget {
       title: 'MediStatus',
       theme: ThemeData(
         useMaterial3: true,
-        colorSchemeSeed: Colors.blue,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xFF0284C7),
+        ),
       ),
       home: const HomeScreen(),
     );
