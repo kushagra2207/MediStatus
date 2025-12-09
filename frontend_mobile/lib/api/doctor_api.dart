@@ -21,17 +21,4 @@ class DoctorApi {
       throw Exception('Failed to load doctors: ${res.statusCode}');
     }
   }
-
-  Future<Doctor> fetchDoctorById(String doctorId) async {
-    final uri = Uri.parse('$apiBaseUrl/api/doctors/id/$doctorId');
-
-    final res = await _client.get(uri).timeout(const Duration(seconds: 60));
-
-    if (res.statusCode == 200) {
-      final Map<String, dynamic> decoded = jsonDecode(res.body);
-      return Doctor.fromJson(decoded);
-    } else {
-      throw Exception('Failed to fetch doctor details: ${res.statusCode}');
-    }
-  }
 }
