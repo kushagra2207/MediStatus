@@ -161,3 +161,5 @@ Kushagra Kumar Arora
 **For detailed backend API documentation and configuration, please refer to [backend/README.md](backend/README.md)**
 
 **For frontend setup and component documentation, please refer to [frontend_web/README.md](frontend_web/README.md)**
+
+**For mobile app setup and component documentation, please refer to [frontend_mobile/README.md](frontend_mobile/README.md)**
