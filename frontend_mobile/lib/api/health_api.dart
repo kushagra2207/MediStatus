@@ -11,7 +11,7 @@ class HealthApi {
     final uri = Uri.parse('$apiBaseUrl/health');
 
     try {
-      final res = await _client.get(uri).timeout(const Duration(seconds: 60));
+      final res = await _client.get(uri).timeout(const Duration(seconds: 90));
 
       if (res.statusCode == 200) {
         final decoded = jsonDecode(res.body);
