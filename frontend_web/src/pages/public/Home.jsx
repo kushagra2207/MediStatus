@@ -11,9 +11,9 @@ const Home = () => {
             {(loading || !serverOnline) && (
                 <div className="fixed bottom-4 right-4 z-50">
                     {loading && serverOnline && (
-                        <div className="rounded-full bg-slate-900/90 text-slate-50 text-xs px-3 py-1.5 shadow-lg flex items-center gap-2">
+                        <div className="rounded-full bg-slate-900/90 text-slate-50 text-xs px-3 py-1.5 shadow-lg flex items-center gap-2" title='First load may take a bit longer due to server cold start'>
                             <span className="h-2 w-2 rounded-full bg-amber-400 animate-pulse" />
-                            <span>Connecting to server…</span>
+                            <span>Waking up server…</span>
                         </div>
                     )}
 
