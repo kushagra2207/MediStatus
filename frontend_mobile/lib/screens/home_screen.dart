@@ -240,7 +240,7 @@ class _HomeScreenState extends State<HomeScreen> {
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return _buildStatusBadge(
-                    'Connecting to server...',
+                    'Waking up server...',
                     const Color.fromARGB(255, 251, 191, 36),
                     Icons.settings,
                   );
