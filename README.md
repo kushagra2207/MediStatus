@@ -4,8 +4,10 @@
 
 MediStatus is a modern hospital management system designed to streamline operations for public and government hospitals. The platform provides transparency for patients while enabling secure internal resource management for hospital staff. The system helps patients avoid unnecessary waiting by accessing real-time information about hospitals and doctor availability schedules.
 
-Live Demo: https://medistatus.vercel.app/
-Video Demo: https://youtu.be/F-xmNdMpTHQ
+## Links
+
+- Live Demo: https://medistatus.vercel.app/
+- Video Demo: https://youtu.be/F-xmNdMpTHQ
 
 ## Features
 
