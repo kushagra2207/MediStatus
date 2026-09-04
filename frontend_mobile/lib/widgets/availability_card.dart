@@ -41,8 +41,8 @@ class AvailabilityCard extends StatelessWidget {
                   'Availability',
                   style: TextStyle(
                     fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xFF1E293B),
                   ),
                 ),
               ],
@@ -74,7 +74,7 @@ class AvailabilityCard extends StatelessWidget {
             else
               ...availability.map(
                 (slot) => Container(
-                  margin: const EdgeInsets.only(bottom: 8),
+                  margin: const EdgeInsets.only(bottom: 10),
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: Color(0xFF0284C7).withAlpha((0.05 * 255).toInt()),

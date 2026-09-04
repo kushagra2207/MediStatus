@@ -14,8 +14,9 @@ class DoctorCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      elevation: 2,
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+      elevation: 1,
+      shadowColor: Colors.black.withAlpha((0.08 * 255).toInt()),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
       ),
@@ -27,19 +28,19 @@ class DoctorCard extends StatelessWidget {
           child: Row(
             children: [
               Container(
-                width: 56,
-                height: 56,
+                width: 52,
+                height: 52,
                 decoration: BoxDecoration(
-                  color: Color(0xFF0284C7).withAlpha((0.1 * 255).toInt()),
+                  color: const Color(0xFF0284C7).withAlpha((0.08 * 255).toInt()),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: const Icon(
-                  Icons.person,
-                  size: 32,
+                  Icons.person_rounded,
+                  size: 28,
                   color: Color(0xFF0284C7),
                 ),
               ),
-              const SizedBox(width: 16),
+              const SizedBox(width: 14),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -49,25 +50,25 @@ class DoctorCard extends StatelessWidget {
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
-                        color: Colors.black87,
+                        color: Color(0xFF1E293B),
                       ),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       doctor.specialization,
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey.shade600,
+                      style: const TextStyle(
+                        fontSize: 13,
+                        color: Color(0xFF64748B),
                       ),
                     ),
                   ],
                 ),
               ),
               if (onTap != null)
-                Icon(
-                  Icons.arrow_forward_ios,
+                const Icon(
+                  Icons.arrow_forward_ios_rounded,
                   size: 16,
-                  color: Colors.grey.shade400,
+                  color: Color(0xFF94A3B8),
                 ),
             ],
           ),

@@ -16,7 +16,7 @@ class DoctorDetailScreen extends StatelessWidget {
       backgroundColor: const Color(0xFFDEEBF7),
       appBar: AppBar(
         title: const Text('Doctor Details'),
-        backgroundColor: const Color(0xFF0284C7),
+        backgroundColor: const Color(0xFF0369A1),
         foregroundColor: Colors.white,
         elevation: 0,
       ),
@@ -33,15 +33,19 @@ class DoctorDetailScreen extends StatelessWidget {
               child: Column(
                 children: [
                   Container(
-                    width: 80,
-                    height: 80,
+                    width: 88,
+                    height: 88,
                     decoration: BoxDecoration(
-                      color: Color(0xFF0284C7).withAlpha((0.1 * 255).toInt()),
-                      borderRadius: BorderRadius.circular(40),
+                      color: const Color(0xFF0284C7).withAlpha((0.08 * 255).toInt()),
+                      borderRadius: BorderRadius.circular(44),
+                      border: Border.all(
+                        color: const Color(0xFF0284C7).withAlpha((0.15 * 255).toInt()),
+                        width: 2,
+                      ),
                     ),
                     child: const Icon(
-                      Icons.person,
-                      size: 48,
+                      Icons.person_rounded,
+                      size: 44,
                       color: Color(0xFF0284C7),
                     ),
                   ),
@@ -50,8 +54,8 @@ class DoctorDetailScreen extends StatelessWidget {
                     doctor.name,
                     style: const TextStyle(
                       fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
+                      fontWeight: FontWeight.w700,
+                      color: Color(0xFF1E293B),
                     ),
                     textAlign: TextAlign.center,
                   ),
