@@ -8,6 +8,7 @@ MediStatus is a modern hospital management system designed to streamline operati
 
 - Live Demo: https://medistatus.vercel.app/
 - Video Demo: https://youtu.be/F-xmNdMpTHQ
+- Mobile APK: [https://drive.google.com/drive/folders/1Eqmjd5LAjx3_feU_7P-mXFoWKY_tAqN2](https://drive.google.com/drive/folders/1Eqmjd5LAjx3_feU_7P-mXFoWKY_tAqN2)
 
 ## Features
 
@@ -155,16 +156,8 @@ For detailed API documentation, see [backend/README.md](backend/README.md)
 
 - **Backend API & Setup**: See [backend/README.md](backend/README.md)
 - **Frontend Web Setup**: See [frontend_web/README.md](frontend_web/README.md)
-- **Mobile App**: See frontend_mobile/README.md
+- **Mobile App**: See [frontend_mobile/README.md](frontend_mobile/README.md)
 
 ## Author
 
 Kushagra Kumar Arora
-
----
-
-**For detailed backend API documentation and configuration, please refer to [backend/README.md](backend/README.md)**
-
-**For frontend setup and component documentation, please refer to [frontend_web/README.md](frontend_web/README.md)**
-
-**For mobile app setup and component documentation, please refer to [frontend_mobile/README.md](frontend_mobile/README.md)**
