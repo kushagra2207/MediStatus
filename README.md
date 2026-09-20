@@ -7,7 +7,7 @@ MediStatus is a modern hospital management system designed to streamline operati
 ## Links
 
 - Live Demo: https://medistatus.vercel.app/
-- Video Demo: https://youtu.be/F-xmNdMpTHQ
+- Video Demo: https://youtu.be/gCJ9jkbSiIU
 - Mobile APK: [https://drive.google.com/drive/folders/1Eqmjd5LAjx3_feU_7P-mXFoWKY_tAqN2](https://drive.google.com/drive/folders/1Eqmjd5LAjx3_feU_7P-mXFoWKY_tAqN2)
 
 ## Features
