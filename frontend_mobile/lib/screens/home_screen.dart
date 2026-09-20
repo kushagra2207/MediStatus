@@ -136,7 +136,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                               const SizedBox(height: 28),
                               _buildAnimatedSection(1, _buildFeaturedHospitals()),
                               const SizedBox(height: 24),
-                              _buildAnimatedSection(2, _buildInfoSection()),
+                              _buildAnimatedSection(2, _buildKeyFeatures()),
                             ],
                           ),
                         ),
@@ -230,71 +230,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
   }
 
-  // ─── Stats Card ──────────────────────────────────────────
-
-  Widget _buildStatsRow() {
-    final hospitalCount = _hospitals?.length ?? 0;
-
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 24),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: const Color(0xFF0284C7).withAlpha((0.12 * 255).toInt()),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withAlpha((0.04 * 255).toInt()),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            width: 44,
-            height: 44,
-            decoration: BoxDecoration(
-              color: const Color(0xFF0284C7).withAlpha((0.08 * 255).toInt()),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: const Icon(
-              Icons.local_hospital_rounded,
-              size: 22,
-              color: Color(0xFF0284C7),
-            ),
-          ),
-          const SizedBox(width: 14),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                _loadError != null ? '--' : '$hospitalCount',
-                style: GoogleFonts.inter(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w700,
-                  color: const Color(0xFF1E293B),
-                ),
-              ),
-              const SizedBox(height: 2),
-              Text(
-                'Hospitals Available',
-                style: GoogleFonts.inter(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w500,
-                  color: const Color(0xFF64748B),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
 
   // ─── Browse Hospitals CTA ────────────────────────────────
 
@@ -637,32 +572,75 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
   }
 
-  // ─── Info Section ────────────────────────────────────────
+  // ─── Key Features Section ─────────────────────────────────
 
-  Widget _buildInfoSection() {
-    return Container(
-      padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        color: const Color(0xFFE0F2FE),
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(
-          color: const Color(0xFF0284C7).withAlpha((0.15 * 255).toInt()),
+  Widget _buildKeyFeatures() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Key Features',
+          style: GoogleFonts.inter(
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+            color: const Color(0xFF1E293B),
+          ),
         ),
+        const SizedBox(height: 14),
+        _buildFeatureCard(
+          icon: Icons.search_rounded,
+          title: 'Find Hospitals',
+          description: 'Browse all registered hospitals and explore what each one has to offer.',
+        ),
+        const SizedBox(height: 12),
+        _buildFeatureCard(
+          icon: Icons.person_outline_rounded,
+          title: 'Check Doctors',
+          description: 'View doctor profiles, their specialties, and contact information.',
+        ),
+        const SizedBox(height: 12),
+        _buildFeatureCard(
+          icon: Icons.schedule_rounded,
+          title: 'View Schedules',
+          description: 'Check doctor-reported working hours and availability at a glance.',
+        ),
+      ],
+    );
+  }
+
+  Widget _buildFeatureCard({
+    required IconData icon,
+    required String title,
+    required String description,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: const Color(0xFFE2E8F0)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withAlpha((0.04 * 255).toInt()),
+            blurRadius: 8,
+            offset: const Offset(0, 3),
+          ),
+        ],
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            width: 36,
-            height: 36,
+            width: 40,
+            height: 40,
             decoration: BoxDecoration(
               color: const Color(0xFF0284C7).withAlpha((0.1 * 255).toInt()),
               borderRadius: BorderRadius.circular(10),
             ),
-            child: const Icon(
-              Icons.info_outline_rounded,
-              size: 18,
-              color: Color(0xFF0284C7),
+            child: Icon(
+              icon,
+              size: 20,
+              color: const Color(0xFF0284C7),
             ),
           ),
           const SizedBox(width: 14),
@@ -671,20 +649,20 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'How it works',
+                  title,
                   style: GoogleFonts.inter(
                     fontSize: 15,
                     fontWeight: FontWeight.w600,
-                    color: const Color(0xFF0C4A6E),
+                    color: const Color(0xFF1E293B),
                   ),
                 ),
-                const SizedBox(height: 6),
+                const SizedBox(height: 4),
                 Text(
-                  'Browse hospitals to find doctors, check their availability, and view their detailed schedules.',
+                  description,
                   style: GoogleFonts.inter(
                     fontSize: 13,
                     fontWeight: FontWeight.w400,
-                    color: const Color(0xFF0369A1),
+                    color: const Color(0xFF64748B),
                     height: 1.5,
                   ),
                 ),
