@@ -76,9 +76,9 @@ const AdminSignup = ({ hospitals }) => {
       setOtp('')
       setOtpSent(false)
 
-      const { token } = res.data
-      localStorage.setItem("token", token)
-      const decoded = jwtDecode(token)
+      const { accessToken } = res.data
+      localStorage.setItem("accessToken", accessToken)
+      const decoded = jwtDecode(accessToken)
       setUser(decoded)
     }
     else {
