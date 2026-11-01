@@ -2,13 +2,15 @@ import { Link } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import { useState } from 'react'
 import { HiMenu, HiX } from 'react-icons/hi'
+import { authLogout } from '../api/auth'
 
 const Navbar = () => {
   const { user, setUser } = useAuth()
   const [isOpen, setIsOpen] = useState(false)
 
-  const handleLogout = () => {
-    localStorage.removeItem("token")
+  const handleLogout = async () => {
+    await authLogout()
+    localStorage.removeItem("accessToken")
     setUser(null)
     setIsOpen(false)
   }

@@ -12,14 +12,14 @@ const isTokenExpired = (decoded) => {
 
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(() => {
-        const token = localStorage.getItem("token")
+        const token = localStorage.getItem("accessToken")
 
         if (!token) return null
 
         try {
             const decoded = jwtDecode(token)
             if (isTokenExpired(decoded)) {
-                localStorage.removeItem("token")
+                localStorage.removeItem("accessToken")
                 return null
             }
             return decoded
@@ -34,7 +34,7 @@ export const AuthProvider = ({ children }) => {
 
     useEffect(() => {
         const handleStorage = () => {
-            const token = localStorage.getItem("token")
+            const token = localStorage.getItem("accessToken")
             if (!token) {
                 setUser(null)
             }
@@ -42,7 +42,7 @@ export const AuthProvider = ({ children }) => {
                 try {
                     const decoded = jwtDecode(token)
                     if (isTokenExpired(decoded)) {
-                        localStorage.removeItem("token")
+                        localStorage.removeItem("accessToken")
                         setUser(null)
                     }
                     else setUser(decoded)
@@ -53,7 +53,14 @@ export const AuthProvider = ({ children }) => {
             }
         }
 
+        // Listen for cross-tab storage changes
         window.addEventListener("storage", handleStorage)
+
+        // Listen for forced logout from fetchWrapper (refresh token failed)
+        const handleAuthLogout = () => {
+            setUser(null)
+        }
+        window.addEventListener("auth:logout", handleAuthLogout)
 
         const checkServer = async () => {
             setLoading(true)
@@ -75,7 +82,10 @@ export const AuthProvider = ({ children }) => {
 
         checkServer()
 
-        return () => window.removeEventListener("storage", handleStorage)
+        return () => {
+            window.removeEventListener("storage", handleStorage)
+            window.removeEventListener("auth:logout", handleAuthLogout)
+        }
     }, [])
 
     return (
