@@ -19,4 +19,22 @@ class Hospital {
       contact: json['contact'] as String? ?? 'Contact not available'
     );
   }
+
+  /// Convert to a Map for SQLite insertion.
+  Map<String, dynamic> toMap() => {
+    'id': id,
+    'name': name,
+    'address': address,
+    'contact': contact,
+  };
+
+  /// Create a Hospital from a SQLite row.
+  factory Hospital.fromMap(Map<String, dynamic> map) {
+    return Hospital(
+      id: map['id'] as String,
+      name: map['name'] as String,
+      address: map['address'] as String,
+      contact: map['contact'] as String,
+    );
+  }
 }
