@@ -17,6 +17,7 @@ MediStatus is a modern hospital management system designed to streamline operati
 - Search hospitals by name or location
 - Browse doctors by specialization
 - Access doctor availability schedules and timings
+- **Offline-first caching** (Mobile): Data is cached locally via SQLite so the app works without internet after the first load, with automatic background refresh when connectivity is restored
 - No authentication required
 
 ### Web Application Features
@@ -52,6 +53,8 @@ MediStatus is a modern hospital management system designed to streamline operati
 ### Frontend Mobile
 - **Framework**: Flutter
 - **Language**: Dart
+- **Local Database**: SQLite (`sqflite`) for offline caching
+- **Connectivity**: `connectivity_plus` for network-aware auto-refresh
 - **Purpose**: Cross-platform public app for viewing hospitals and doctor availability
 
 ## Project Structure
@@ -125,7 +128,7 @@ For detailed API documentation, see [backend/README.md](backend/README.md)
 
 **Key Endpoints:**
 - Public: `GET /api/hospitals`, `POST /api/hospitals`
-- Auth: `/api/auth/admin/signup-*`, `/api/auth/doctor/signup-*`, login endpoints
+- Auth: `/api/auth/admin/signup-*`, `/api/auth/doctor/signup-*`, login, `/api/auth/refresh`, `/api/auth/logout`
 - Protected: Medicine, Doctor, and Admin management endpoints
 
 ## Key Features Implementation

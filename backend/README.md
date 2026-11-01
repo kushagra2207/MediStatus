@@ -9,8 +9,9 @@ The MediStatus backend is a RESTful API built with Node.js and Express.js that p
 - **Runtime**: Node.js
 - **Framework**: Express.js 5.1.0
 - **Database**: MongoDB with Mongoose 8.16.2
-- **Authentication**: JSON Web Tokens (JWT) with OTP verification
+- **Authentication**: JSON Web Tokens (JWT) with OTP verification and refresh token rotation
 - **Security**: bcrypt 6.0.0 for password hashing, Gmail API for OTP delivery
+- **Cookie Handling**: cookie-parser for httpOnly refresh token cookies
 - **Rate Limiting**: express-rate-limit 8.1.0
 - **CORS**: cors 2.8.5
 - **Environment**: dotenv 17.1.0
@@ -24,30 +25,33 @@ backend/
 ├── controllers/              # Business logic controllers
 │   ├── adminAuthController.js   # Admin authentication logic
 │   ├── adminController.js       # Admin CRUD operations
+│   ├── authController.js        # Token refresh and logout logic
 │   ├── doctorAuthController.js  # Doctor authentication logic
 │   ├── doctorController.js      # Doctor CRUD operations
 │   ├── hospitalController.js    # Hospital CRUD operations
 │   └── medicineController.js    # Medicine CRUD operations
 ├── middlewares/
-│   ├── auth.js              # JWT authentication middleware
+│   ├── auth.js              # JWT access token verification middleware
 │   └── rateLimiter.js       # Rate limiting middleware
 ├── models/                   # Mongoose data models
 │   ├── Admin.js             # Admin schema
 │   ├── Doctor.js            # Doctor schema
 │   ├── Hospital.js          # Hospital schema
-│   |── Medicine.js          # Medicine schema
-│   └── Otp.js               # OTP schema
+│   ├── Medicine.js          # Medicine schema
+│   ├── Otp.js               # OTP schema
+│   └── RefreshToken.js      # Refresh token schema (for token rotation)
 ├── routes/                   # API route definitions
 │   ├── adminAuthRoutes.js   # Admin auth endpoints
 │   ├── adminRoutes.js       # Admin protected endpoints
+│   ├── authRoutes.js        # Shared auth endpoints (token refresh, logout)
 │   ├── doctorAuthRoutes.js  # Doctor auth endpoints
 │   ├── doctorRoutes.js      # Doctor protected endpoints
 │   ├── hospitalRoutes.js    # Hospital endpoints
 │   └── medicineRoutes.js    # Medicine endpoints
 ├── utils/
-|   ├── generate_token.js    # Script to generate refresh token
-|   ├── mailer.js            # Mail utility function
-│   └── jwt.js               # JWT utility functions
+│   ├── generate_token.js    # Script to generate refresh token
+│   ├── mailer.js            # Mail utility function
+│   └── jwt.js               # JWT access token + opaque refresh token utilities
 └── server.js                # Application entry point
 ```
 
@@ -107,7 +111,7 @@ The server will start on `http://localhost:5000` (or the port specified in `.env
 
 #### Health Check
 ```
-GET /
+GET /health
 ```
 Returns server status
 
@@ -133,8 +137,7 @@ POST /api/auth/admin/signup-getOtp
 ```
 Send OTP to admin's email
 - Request body: `{ email }`
-- Returns: Success message confirming OTP sent to email
-- Example response: `{ msg: "OTP sent to your email" }`
+- Returns: `{ msg: "OTP sent to email" }`
 
 **Step 2: Verify OTP and Create Account**
 ```
@@ -142,8 +145,7 @@ POST /api/auth/admin/signup-verifyOtp
 ```
 Verify OTP and create admin account
 - Request body: `{ name, email, password, otp, hospital }`
-- Returns: JWT token and admin data
-- Example response: `{ token: "jwt_token_here", admin: { id, name, email, hospital } }`
+- Returns: `{ accessToken }` (refresh token set as httpOnly cookie)
 
 **Admin Login**
 ```
@@ -151,8 +153,7 @@ POST /api/auth/admin/login
 ```
 Admin login with email and password
 - Request body: `{ email, password }`
-- Returns: JWT token and admin data
-- Example response: `{ token: "jwt_token_here", admin: { id, name, email, hospital } }`
+- Returns: `{ accessToken }` (refresh token set as httpOnly cookie)
 
 #### Doctor Authentication (OTP-Based Signup)
 
@@ -162,8 +163,7 @@ POST /api/auth/doctor/signup-getOtp
 ```
 Send OTP to doctor's email
 - Request body: `{ email }`
-- Returns: Success message confirming OTP sent to email
-- Example response: `{ msg: "OTP sent to your email" }`
+- Returns: `{ msg: "OTP sent to email" }`
 
 **Step 2: Verify OTP and Create Account**
 ```
@@ -171,8 +171,7 @@ POST /api/auth/doctor/signup-verifyOtp
 ```
 Verify OTP and create doctor account
 - Request body: `{ name, email, password, otp, specialization, hospital }`
-- Returns: JWT token and doctor data
-- Example response: `{ token: "jwt_token_here", doctor: { id, name, email, specialization, hospital } }`
+- Returns: `{ accessToken }` (refresh token set as httpOnly cookie)
 
 **Doctor Login**
 ```
@@ -180,14 +179,32 @@ POST /api/auth/doctor/login
 ```
 Doctor login with email and password
 - Request body: `{ email, password }`
-- Returns: JWT token and doctor data
-- Example response: `{ token: "jwt_token_here", doctor: { id, name, email, specialization, hospital } }`
+- Returns: `{ accessToken }` (refresh token set as httpOnly cookie)
+
+#### Token Management (Shared)
+
+**Refresh Access Token**
+```
+POST /api/auth/refresh
+```
+Exchange a valid refresh token (sent automatically via httpOnly cookie) for a new access token. Uses **token rotation** — the old refresh token is deleted and a new one is issued.
+- Requires: `refreshToken` httpOnly cookie
+- Returns: `{ accessToken }` (new refresh token set as httpOnly cookie)
+- Rate limited: Yes
+
+**Logout**
+```
+POST /api/auth/logout
+```
+Revoke the refresh token and clear the cookie.
+- Requires: `refreshToken` httpOnly cookie
+- Returns: `{ msg: "Logged out successfully" }`
 
 ### Protected Endpoints
 
 All protected endpoints require an `Authorization` header:
 ```
-Authorization: Bearer <jwt_token>
+Authorization: Bearer <access_token>
 ```
 
 #### Medicines (Admin and Doctor)
@@ -294,16 +311,29 @@ Get specific admin
 }
 ```
 
+### RefreshToken
+```javascript
+{
+  token: String (required, unique, indexed),
+  userId: ObjectId (required),
+  userRole: String (required, enum: ['doctor', 'admin']),
+  expiresAt: Date (required),
+  createdAt: Date,  // auto via timestamps
+  updatedAt: Date   // auto via timestamps
+}
+// TTL index on expiresAt — MongoDB auto-deletes expired documents
+```
+
 ## Authentication Flow
 
 ### OTP-Based Signup Process
-The new signup process ensures secure account creation with email verification:
+The signup process ensures secure account creation with email verification:
 
 1. **OTP Request** (`signup-getOtp` endpoint):
    - User provides email address
    - System generates a random OTP
    - OTP is sent to the provided email via Gmail SMTP
-   - OTP is stored in db
+   - OTP hash is stored in the database
 
 2. **OTP Verification** (`signup-verifyOtp` endpoint):
    - User submits the OTP received in email along with account details
@@ -313,7 +343,8 @@ The new signup process ensures secure account creation with email verification:
    - If OTP is valid:
      - User account is created with provided details
      - Password is hashed using bcrypt
-     - JWT token is generated and returned
+     - Short-lived access token (JWT, 15 min) is returned in the response body
+     - Opaque refresh token (7 days) is stored in MongoDB and set as an httpOnly cookie
      - OTP is cleared from db
    - If OTP is invalid or expired:
      - Error message is returned
@@ -322,17 +353,34 @@ The new signup process ensures secure account creation with email verification:
 3. **Login**:
    - User signs in with email and password
    - Server validates credentials
-   - Server generates JWT token with user ID and role
-   - Client stores token (web: localStorage, mobile: secure storage)
-   - Client sends token in `Authorization` header for protected requests
+   - Server issues an access token (JWT, 15 min) in the response body
+   - Server issues a refresh token (opaque, 7 days) as an httpOnly cookie
+   - Client stores access token in localStorage for API requests
 
-### JWT Token Flow
-1. User completes signup verification or logs in
-2. Server generates JWT token with user ID and role
-3. Client stores token in localStorage (web) or secure storage (mobile)
-4. Client sends token in `Authorization` header for protected requests
-5. Middleware verifies token and extracts user information
-6. Protected routes are accessible only with valid token
+### Dual-Token Architecture
+
+The system uses a **short-lived access token + rotating refresh token** pattern for secure session management:
+
+| Token | Type | Expiry | Storage (Server) | Storage (Client) | Purpose |
+|-------|------|--------|-------------------|-------------------|---------|
+| Access Token | JWT (signed) | 15 minutes | Not stored | `localStorage` | Authorize API requests via `Bearer` header |
+| Refresh Token | Opaque (random bytes) | 7 days | MongoDB (`RefreshToken` collection) | httpOnly cookie | Silently renew expired access tokens |
+
+**Token Refresh Flow:**
+1. Client makes an API request with an expired access token
+2. Server returns `401 Unauthorized`
+3. Client automatically calls `POST /api/auth/refresh` (cookie sent automatically)
+4. Server validates the refresh token, verifies the user still exists
+5. Server performs **token rotation**: deletes old refresh token, creates new pair
+6. Client receives new access token, retries the original request
+7. If refresh fails (token expired/revoked), client is logged out
+
+**Refresh Token Cookie Configuration:**
+- `httpOnly: true` — not accessible via JavaScript (XSS protection)
+- `secure: true` in production (HTTPS only)
+- `sameSite: 'None'` in production, `'Lax'` in development
+- `path: '/api/auth'` — cookie only sent to auth endpoints
+- `maxAge: 7 days`
 
 ### Password Security
 - Passwords are hashed using bcrypt with 10 salt rounds
@@ -361,9 +409,9 @@ The API implements three levels of rate limiting:
 
 1. **Public Rate Limiter**: For public endpoints (hospital listings)
    - Allows more requests for general browsing
-2. **Auth Rate Limiter**: For authentication endpoints (login/signup)
+2. **Auth Rate Limiter**: For authentication endpoints (login/signup/refresh)
    - Stricter limits to prevent brute force attacks
-   - Applies to both OTP requests and verification
+   - Applies to OTP requests, verification, and token refresh
 3. **Protected Rate Limiter**: For authenticated endpoints (medicine management)
    - Strict limits to prevent API abuse
 
@@ -374,7 +422,7 @@ This prevents abuse and ensures API stability.
 CORS is configured to allow requests from the frontend URL specified in `FRONTEND_URL`. The configuration allows:
 - Methods: GET, POST, PUT, PATCH, DELETE
 - Headers: Content-Type, Authorization
-- Credentials: true
+- Credentials: true (required for httpOnly refresh token cookies)
 
 ## Error Handling
 
@@ -382,7 +430,7 @@ The API follows consistent error handling:
 - 200: Success
 - 201: Created
 - 400: Bad Request (validation errors, invalid OTP, expired OTP)
-- 401: Unauthorized (missing or invalid token, incorrect credentials)
+- 401: Unauthorized (missing or invalid token, expired refresh token, incorrect credentials)
 - 403: Forbidden (insufficient permissions)
 - 404: Not Found
 - 500: Internal Server Error
@@ -394,11 +442,12 @@ Error responses follow this format:
 }
 ```
 
-Common signup-related errors:
-- `"Invalid or expired OTP"` - OTP verification failed
-- `"Email already registered"` - User account already exists
-- `"OTP sent to your email"` - OTP successfully sent
-- `"Invalid email format"` - Email validation failed
+Common auth-related errors:
+- `"Invalid or expired OTP"` — OTP verification failed
+- `"Email already registered"` — User account already exists
+- `"No refresh token provided"` — Missing refresh token cookie
+- `"Invalid refresh token"` — Token not found in database (revoked or expired)
+- `"Refresh token expired"` — Token past its expiry date
 
 ## Development
 
@@ -418,15 +467,18 @@ npm run dev        # Start development server with watch mode
 1. **Environment Variables**: Never commit `.env` files
 2. **JWT Secret**: Use a strong, random secret key (minimum 32 characters)
 3. **Password Hashing**: Always hash passwords before storing (bcrypt with 10+ salt rounds)
-4. **Rate Limiting**: Prevents brute force attacks on login and OTP requests
+4. **Rate Limiting**: Prevents brute force attacks on login, OTP, and token refresh endpoints
 5. **Input Validation**: Mongoose schemas validate input data
 6. **CORS**: Restrict origins to known frontend URLs only
-7. **Token Expiration**: Consider implementing token expiration (currently recommended to add)
-8. **OTP Security**: 
-   - OTPs are single-use
-   - OTPs expire after short duration (10-15 minutes recommended)
-   - OTPs are not logged or exposed in responses
-9. **Email Security**: Use Gmail App Password instead of main password
+7. **Token Expiration**: Access tokens expire in 15 minutes; refresh tokens in 7 days with automatic rotation
+8. **Refresh Token Rotation**: Each refresh request invalidates the old token and issues a new one, limiting the window for token theft
+9. **httpOnly Cookies**: Refresh tokens are stored in httpOnly cookies, inaccessible to JavaScript (XSS protection)
+10. **MongoDB TTL Index**: Expired refresh tokens are automatically cleaned up by MongoDB
+11. **OTP Security**:
+    - OTPs are single-use
+    - OTPs expire after short duration (5 minutes)
+    - OTPs are hashed before storage
+12. **Email Security**: Use Gmail App Password instead of main password
 
 ## Database Connection
 

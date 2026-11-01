@@ -12,8 +12,8 @@ The MediStatus web frontend is a modern React application that provides a user-f
 - **Styling**: Tailwind CSS 4.1.11
 - **Icons**: React Icons 5.5.0
 - **Notifications**: React Toastify 11.0.5
-- **Authentication**: JWT Decode 4.0.0
-- **HTTP Client**: Fetch API
+- **Authentication**: JWT Decode 4.0.0 (for reading access token claims)
+- **HTTP Client**: Fetch API with custom wrapper (silent token refresh)
 
 ## Project Structure
 
@@ -25,7 +25,7 @@ frontend_web/
 │   ├── api/                  # API service layer
 │   │   ├── admin.js          # Admin API calls
 │   │   ├── doctor.js         # Doctor API calls
-│   │   ├── fetchWrapper.js   # HTTP request wrapper
+│   │   ├── fetchWrapper.js   # HTTP request wrapper with silent token refresh
 │   │   ├── hospital.js       # Hospital API calls
 │   │   └── medicine.js       # Medicine API calls
 │   ├── components/           # Reusable components
@@ -125,7 +125,8 @@ The application will start on `http://localhost:5173` (Vite default port).
 ### Authentication
 - Separate login/signup pages for admins and doctors
 - OTP-based signup process with email verification
-- JWT token stored in localStorage
+- Dual-token session management (short-lived access token + httpOnly refresh token cookie)
+- Silent token refresh — expired access tokens are renewed automatically without user interaction
 - Automatic redirect based on authentication status
 - Role-based navigation in the navbar
 
@@ -142,13 +143,20 @@ The application will start on `http://localhost:5173` (Vite default port).
 ## Component Architecture
 
 ### API Layer (`src/api/`)
-- `fetchWrapper.js`: Centralized HTTP client with JWT token injection
+- `fetchWrapper.js`: Centralized HTTP client with JWT token injection and **silent token refresh**
+  - All requests include `credentials: 'include'` to send httpOnly cookies
+  - On a `401` response, the wrapper automatically calls `POST /api/auth/refresh`
+  - Uses a concurrency lock (`isRefreshing` + shared promise) to prevent multiple simultaneous refresh calls
+  - On successful refresh, the original request is retried with the new access token
+  - On failed refresh, the access token is cleared and an `auth:logout` event is dispatched
 - Separate API files for each resource (admin, doctor, hospital, medicine)
 - Automatic error handling and response parsing
 
 ### Authentication (`src/hooks/useAuth.jsx`)
 - Context provider for authentication state
-- Token management and user data persistence
+- Initializes user from the access token in `localStorage` (decoded via `jwtDecode`)
+- Checks token expiry client-side on load — expired tokens are cleared
+- Listens for `storage` events (cross-tab sync) and `auth:logout` events (from fetchWrapper)
 - Global access to user information across components
 
 ### Route Protection
@@ -164,9 +172,9 @@ The application will start on `http://localhost:5173` (Vite default port).
 ## State Management
 
 Authentication state is managed using React Context API via the `useAuth` hook. This provides:
-- Global access to user information
+- Global access to user information (decoded from the access token)
 - Authentication status across all components
-- Automatic token injection for API requests
+- Reactive logout when the refresh token expires (via the `auth:logout` event from fetchWrapper)
 
 ## Styling
 
@@ -182,12 +190,13 @@ Global styles are defined in `src/index.css` with Tailwind imports.
 
 All API calls are made through the service layer in `src/api/`:
 - Centralized error handling
-- Automatic JWT token injection
+- Automatic JWT access token injection via `Authorization: Bearer` header
+- Silent token refresh on `401` responses
 - Consistent request/response handling
 - Toast notifications for success/error states
 
 ### API Base URL
-The API base URL is configured in individual API files. Default: `http://localhost:5000/api`
+The API base URL is configured via the `VITE_API_BASE_URL` environment variable. Default: `http://localhost:5000`
 
 ### OTP-Based Signup Integration
 The signup flow integrates with the backend's OTP verification:
@@ -195,12 +204,11 @@ The signup flow integrates with the backend's OTP verification:
 1. **Admin/Doctor Signup Step 1**: Enter email and click "Send OTP"
    - Calls `POST /api/auth/admin/signup-getOtp` or `/api/auth/doctor/signup-getOtp`
    - OTP is sent to the provided email
-   - User receives the OTP on the email
 
 2. **Admin/Doctor Signup Step 2**: Enter OTP and other details
    - Calls `POST /api/auth/admin/signup-verifyOtp` or `/api/auth/doctor/signup-verifyOtp`
    - System verifies OTP and creates account
-   - JWT token is returned on successful verification
+   - Access token is returned in the response body; refresh token is set as an httpOnly cookie
    - User is logged in automatically
 
 ## Development
@@ -225,33 +233,35 @@ The development server runs on `http://localhost:5173` with:
 Create a `.env` file for environment-specific configuration:
 
 ```env
-VITE_API_URL=http://localhost:5000/api
+VITE_API_BASE_URL=http://localhost:5000
 ```
 
-Access in code using `import.meta.env.VITE_API_URL`
+Access in code using `import.meta.env.VITE_API_BASE_URL`
 
 ## Browser Storage
 
-The application uses `localStorage` for:
-- JWT token persistence
-- User authentication state
-- Automatic login on page refresh
+The application uses:
+- **`localStorage`** for the short-lived **access token** (JWT, 15 min expiry) — used to authorize API requests
+- **httpOnly cookie** for the **refresh token** (opaque, 7 days) — managed entirely by the browser and backend, not accessible to JavaScript
+
+On page refresh, the access token is read from `localStorage` and decoded. If it is expired, it is cleared and the user appears logged out until the next API call triggers a silent refresh via the httpOnly cookie.
 
 ## Error Handling
 
 - API errors are caught and displayed using React Toastify
 - Form validation errors are shown inline
 - Network errors display user-friendly messages
-- 401 errors automatically log out the user
+- 401 errors trigger a silent token refresh; if refresh fails, the user is logged out
 - OTP errors (invalid or expired) are displayed with guidance
 
 ## Security Considerations
 
-- Tokens stored in localStorage (consider httpOnly cookies for production)
+- **Access tokens** stored in `localStorage` (short-lived, 15 min — limits exposure window)
+- **Refresh tokens** stored in httpOnly cookies (not accessible to JavaScript, preventing XSS theft)
 - Password fields are masked
 - Protected routes enforce authentication
 - Role-based access control on the client side
-- HTTPS should be used in production
+- HTTPS should be used in production (required for `secure` and `sameSite: 'None'` cookies)
 - OTP input is validated before submission
 
 ## Troubleshooting
@@ -262,19 +272,19 @@ The application uses `localStorage` for:
 
 ### API Connection Issues
 - Verify backend server is running
-- Check API base URL configuration
-- Ensure CORS is properly configured in backend
+- Check `VITE_API_BASE_URL` in your `.env` file
+- Ensure CORS is properly configured in backend with `credentials: true`
 
 ### Authentication Issues
-- Clear localStorage and re-login
-- Check token expiration
-- Verify JWT_SECRET in backend matches
+- Clear localStorage and cookies, then re-login
+- Check that the backend's `FRONTEND_URL` env var matches your dev server URL (for CORS + cookies)
+- Verify `JWT_SECRET` in backend is set
 - For signup issues, ensure backend email configuration is set up
 
 ### OTP Issues
 - Verify Gmail credentials are configured in backend
 - Check that OTP was sent (check spam folder)
-- Ensure OTP hasn't expired (typically 10-15 minutes)
+- Ensure OTP hasn't expired (5 minutes)
 - Re-request OTP if expired
 
 ---
