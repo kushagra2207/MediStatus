@@ -1,10 +1,13 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'hospitals_screen.dart';
 import 'doctors_screen.dart';
 import '../api/health_api.dart';
-import '../api/hospital_api.dart';
 import '../models/hospital.dart';
+import '../repositories/hospital_repository.dart';
+import '../services/connectivity_service.dart';
+import '../widgets/last_updated_bar.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -15,7 +18,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   final _healthApi = HealthApi();
-  final _hospitalApi = HospitalApi();
+  final _repository = HospitalRepository();
 
   late final AnimationController _animController;
   late final List<Animation<double>> _fadeAnimations;
@@ -25,11 +28,34 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   bool _isLoading = true;
   String? _loadError;
 
+  // --- Cache & connectivity state ---
+  DateTime? _lastUpdated;
+  bool _isOffline = false;
+  StreamSubscription<bool>? _connectivitySubscription;
+
   @override
   void initState() {
     super.initState();
     _setupAnimations();
+    _initConnectivity();
     _loadData();
+  }
+
+  void _initConnectivity() {
+    ConnectivityService.instance.isConnected.then((connected) {
+      if (mounted) setState(() => _isOffline = !connected);
+    });
+
+    _connectivitySubscription =
+        ConnectivityService.instance.onConnectivityChanged.listen((connected) {
+      if (mounted) {
+        final wasOffline = _isOffline;
+        setState(() => _isOffline = !connected);
+        if (connected && wasOffline) {
+          _refreshFromNetwork();
+        }
+      }
+    });
   }
 
   void _setupAnimations() {
@@ -65,17 +91,44 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     });
   }
 
+  /// Initial load: show cached data instantly if available, then refresh
+  /// from the network in the background.
   Future<void> _loadData() async {
+    // 1. Try cache first — this is instant.
+    final cached = await _repository.getCached();
+    if (cached != null && mounted) {
+      setState(() {
+        _hospitals = cached.data;
+        _lastUpdated = cached.lastUpdated;
+        _isLoading = false;
+        _loadError = null;
+      });
+      _animController.forward();
+    }
+
+    // 2. Refresh from network in the background.
+    await _refreshFromNetwork();
+  }
+
+  /// Attempts a network fetch. If cached data is already showing, a failure
+  /// is silently ignored (the user still sees the stale data).
+  Future<void> _refreshFromNetwork() async {
     try {
-      final hospitals = await _hospitalApi.fetchHospitals();
+      final result = await _repository.getHospitals();
       if (mounted) {
         setState(() {
-          _hospitals = hospitals;
+          _hospitals = result.data;
+          _lastUpdated = result.lastUpdated;
           _isLoading = false;
+          _loadError = null;
         });
-        _animController.forward();
+        if (!_animController.isCompleted) _animController.forward();
       }
     } catch (e) {
+      // If we already have cached data on screen, silently ignore the error.
+      if (_hospitals != null && _hospitals!.isNotEmpty) return;
+
+      // No cached data either — show error state.
       if (mounted) {
         setState(() {
           _loadError = e.toString();
@@ -89,6 +142,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   @override
   void dispose() {
     _animController.dispose();
+    _connectivitySubscription?.cancel();
     super.dispose();
   }
 
@@ -125,7 +179,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     ? _buildLoadingState()
                     : RefreshIndicator(
                         color: const Color(0xFF0284C7),
-                        onRefresh: _loadData,
+                        onRefresh: _refreshFromNetwork,
                         child: SingleChildScrollView(
                           physics: const AlwaysScrollableScrollPhysics(),
                           padding: const EdgeInsets.fromLTRB(20, 20, 20, 32),
@@ -356,8 +410,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             ),
           ],
         ),
-        const SizedBox(height: 14),
-        if (_loadError != null)
+        // ── Last-updated indicator ──
+        LastUpdatedBar(
+          lastUpdated: _lastUpdated,
+          isOffline: _isOffline,
+          onRetry: _refreshFromNetwork,
+        ),
+        const SizedBox(height: 8),
+        if (_loadError != null && _hospitals == null)
           _buildFeaturedError()
         else if (_hospitals == null || _hospitals!.isEmpty)
           _buildFeaturedEmpty()
@@ -675,6 +735,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   // ─── Loading State ───────────────────────────────────────
+  // Only shown on the very first launch when there is no cached data.
 
   Widget _buildLoadingState() {
     return Padding(
@@ -682,7 +743,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       child: Column(
         children: [
           const SizedBox(height: 8),
-          // Shimmer stat cards
           Row(
             children: [
               Expanded(child: _buildShimmerBox(height: 80)),
@@ -691,10 +751,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             ],
           ),
           const SizedBox(height: 24),
-          // Shimmer CTA card
           _buildShimmerBox(height: 92),
           const SizedBox(height: 28),
-          // Shimmer featured section
           Align(
             alignment: Alignment.centerLeft,
             child: _buildShimmerBox(height: 20, width: 160),
@@ -750,6 +808,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   // ─── Server Status Badge ─────────────────────────────────
 
   Widget _buildServerStatus() {
+    // Don't check server health when the device itself is offline —
+    // the LastUpdatedBar already tells the user they're offline.
+    if (_isOffline) return const SizedBox.shrink();
+
     return FutureBuilder<bool>(
       future: _healthApi.checkHealth(),
       builder: (context, snapshot) {
