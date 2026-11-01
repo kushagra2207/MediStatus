@@ -2,12 +2,14 @@ const express = require('express')
 const dotenv = require('dotenv')
 const connectDB = require('./config/db')
 const cors = require('cors')
+const cookieParser = require('cookie-parser')
 
 dotenv.config()
 
 const app = express()
 app.set('trust proxy', 1)
 app.use(express.json())
+app.use(cookieParser())
 
 const allowedOrigins = [
   process.env.FRONTEND_URL,
@@ -36,8 +38,10 @@ app.get('/', (req, res) => {
 // Auth Routes
 const doctorAuthRoutes = require('./routes/doctorAuthRoutes')
 const adminAuthRoutes = require('./routes/adminAuthRoutes')
+const authRoutes = require('./routes/authRoutes')
 app.use("/api/auth/doctor", doctorAuthRoutes)
 app.use("/api/auth/admin", adminAuthRoutes)
+app.use("/api/auth", authRoutes)
 
 // Routes
 const hospitalRoutes = require('./routes/hospitalRoutes')
