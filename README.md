@@ -26,7 +26,7 @@ MediStatus is a modern hospital management system designed to streamline operati
 - **Doctor Dashboard**: View medicines, manage personal availability schedule
 
 ### Security
-- JWT-based authentication with OTP verification
+- Dual-token authentication (short-lived access token + httpOnly refresh token cookie) with OTP verification
 - Password encryption using bcrypt
 - Role-based route protection
 - Rate limiting on API endpoints
@@ -38,7 +38,7 @@ MediStatus is a modern hospital management system designed to streamline operati
 - **Runtime**: Node.js
 - **Framework**: Express.js
 - **Database**: MongoDB with Mongoose ODM
-- **Authentication**: JSON Web Tokens (JWT) with OTP verification
+- **Authentication**: Access + Refresh token architecture with OTP verification
 - **Security**: bcrypt, Gmail integration for OTP delivery
 
 ### Frontend Web
@@ -135,7 +135,7 @@ For detailed API documentation, see [backend/README.md](backend/README.md)
 2. OTP is sent to their email via Gmail
 3. User enters OTP and other details
 4. System verifies OTP and creates account
-5. JWT token is issued for session management
+5. Access token (JWT, 15 min) is returned and refresh token is set as httpOnly cookie (7 days) for silent session renewal
 
 ### Role-Based Access
 - Doctors and Admins have different permissions
@@ -146,7 +146,7 @@ For detailed API documentation, see [backend/README.md](backend/README.md)
 ## Security Considerations
 
 - Passwords hashed with bcrypt (salt rounds: 10)
-- JWT tokens signed with secret key
+- JWT tokens signed with secret key (short-lived access token + rotating refresh token)
 - API rate limiting prevents abuse
 - CORS restricted to known frontend URLs
 - OTP verification adds extra authentication layer
