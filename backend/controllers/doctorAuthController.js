@@ -1,6 +1,6 @@
 const Doctor = require("../models/Doctor")
 const Otp = require("../models/Otp")
-const { createToken } = require("../utils/jwt")
+const { createAccessToken, createRefreshToken, setRefreshCookie } = require("../utils/jwt")
 const bcrypt = require("bcrypt")
 const { sendOtpEmail } = require('../utils/mailer')
 
@@ -56,13 +56,15 @@ const verifyDoctorOtp = async (req, res) => {
 
     await Otp.deleteOne({ email })
 
-    const token = createToken({
+    const accessToken = createAccessToken({
       id: doctor._id,
       role: "doctor",
       hospital: doctor.hospital
     })
+    const refreshToken = await createRefreshToken(doctor._id, "doctor")
+    setRefreshCookie(res, refreshToken)
 
-    res.status(201).json({ token })
+    res.status(201).json({ accessToken })
   }
   catch (error) {
     res.status(500).json({ msg: error.message })
@@ -83,8 +85,11 @@ const doctorLogin = async (req, res) => {
       return res.status(400).json({ msg: "Invalid credentials" })
     }
 
-    const token = createToken({ id: doctor._id, role: "doctor", hospital: doctor.hospital })
-    res.status(200).json({ token })
+    const accessToken = createAccessToken({ id: doctor._id, role: "doctor", hospital: doctor.hospital })
+    const refreshToken = await createRefreshToken(doctor._id, "doctor")
+    setRefreshCookie(res, refreshToken)
+
+    res.status(200).json({ accessToken })
   }
   catch (error) {
     res.status(500).json({ msg: error.message });
